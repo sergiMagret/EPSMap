@@ -3,7 +3,7 @@
 /**
  * Class to interact on a top level domain with all the objects on the database
  */
-class EPS_Map {
+class EPS_Map extends Logging {
     /** Class to access the database
      * @var DB_Access */
     protected DB_Access $_db;
@@ -30,6 +30,8 @@ class EPS_Map {
             "department" => "Department",
             "language" => "Language"
         ];
+
+        parent::__construct();
     }
 
     /**

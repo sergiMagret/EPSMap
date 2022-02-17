@@ -1,6 +1,6 @@
 <?php
 
-class DB_Access {
+class DB_Access extends Logging {
     /** PDO DB access object
      * @var PDO */
     protected PDO $_db;
@@ -51,6 +51,7 @@ class DB_Access {
         $this->_password = $pwd;
         $this->_database = $db_name;
         $this->_intransaction = 0;
+        parent::__construct();
 
         $this->connect();
     }
@@ -157,17 +158,15 @@ class DB_Access {
      * @return PDOStatement Returns a statement to execute.
      */
     private function replaceTokens($queryStr, $substitutions){
-        // TODO: Quan es posin els logs aqui hi hauria d'haver el log de la query
-        // TODO S'HAN DE POSAR TOTS ELS LOGGERS D'ERRRORS I ESO!!
         try{
             $statement = $this->_db->prepare($queryStr);
             if($statement == false){
-                var_dump("Error preparing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+                $this->error_logger->error("Error preparing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
                 return false;
             }
         }catch(PDOException $e){
-            var_dump("Error preparing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
-            var_dump($e->getMessage());
+            $this->error_logger->error("Error preparing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+            $this->error_logger->error($e->getMessage());
             return false;
         }
         
@@ -176,8 +175,8 @@ class DB_Access {
                 $statement->bindValue($param, $value);
             }
         }catch(PDOException $e){
-            var_dump("Error binding values", array("queryStr" => $queryStr, "substitutions" => $substitutions));
-            var_dump($e->getMessage());
+            $this->error_logger->error("Error binding values", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+            $this->error_logger->error($e->getMessage());
             return false;
         }
 
@@ -207,8 +206,8 @@ class DB_Access {
         $statement = $this->replaceTokens($queryStr, $substitutions);
 
         if(is_bool($statement)){
-            var_dump("Error with database statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
-            var_dump($this->getErrorMsg());
+            $this->error_logger->error("Error with database statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+            $this->error_logger->error($this->getErrorMsg());
 
             return false;
         }
@@ -216,17 +215,17 @@ class DB_Access {
         try{
             $res = $statement->execute();
             if($res === false){
-                var_dump("Error executing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
-                var_dump(print_r($statement->errorInfo(), true));
-                var_dump($this->getErrorMsg());
+                $this->error_logger->error("Error executing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+                $this->error_logger->error(print_r($statement->errorInfo(), true));
+                $this->error_logger->error($this->getErrorMsg());
                 return false;
             }
             $resArr = $statement->fetchAll(PDO::FETCH_ASSOC);
         }catch(PDOException $e){
-            var_dump("Error executing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
-            var_dump("Statement error info: ".print_r($statement->errorInfo(), true));
-            var_dump("errorMsg: ".$this->getErrorMsg());
-            var_dump("Exception message: ".$e->getMessage());
+            $this->error_logger->error("Error executing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+            $this->error_logger->error("Statement error info: ".print_r($statement->errorInfo(), true));
+            $this->error_logger->error("errorMsg: ".$this->getErrorMsg());
+            $this->error_logger->error("Exception message: ".$e->getMessage());
             return false;
         }
 
@@ -252,8 +251,8 @@ class DB_Access {
         $statement = $this->replaceTokens($queryStr, $substitutions);
 
         if(is_bool($statement)){
-            var_dump("Error with database statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
-            var_dump($this->getErrorMsg());
+            $this->error_logger->error("Error with database statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+            $this->error_logger->error($this->getErrorMsg());
 
             return false;
         }
@@ -261,16 +260,16 @@ class DB_Access {
         try{
             $res = $statement->execute();
             if($res === false){
-                var_dump("Error executing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
-                var_dump("Statement error info ".print_r($statement->errorInfo(), true));
-                var_dump("errorMsg: ".$this->getErrorMsg());
+                $this->error_logger->error("Error executing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+                $this->error_logger->error("Statement error info ".print_r($statement->errorInfo(), true));
+                $this->error_logger->error("errorMsg: ".$this->getErrorMsg());
                 return false;
             }
         }catch(PDOException $e){
-            var_dump("Error executing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
-            var_dump("Statement error info: ".print_r($statement->errorInfo(), true));
-            var_dump("errorMsg: ".$this->getErrorMsg());
-            var_dump("Exception message: ".$e->getMessage());
+            $this->error_logger->error("Error executing statement", array("queryStr" => $queryStr, "substitutions" => $substitutions));
+            $this->error_logger->error("Statement error info: ".print_r($statement->errorInfo(), true));
+            $this->error_logger->error("errorMsg: ".$this->getErrorMsg());
+            $this->error_logger->error("Exception message: ".$e->getMessage());
 
             return false;
         }
