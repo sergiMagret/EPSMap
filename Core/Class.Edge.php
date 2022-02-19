@@ -98,6 +98,7 @@ class Edge extends DB_Object {
      */
     public function setEdgeStart(Node $node): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -106,7 +107,7 @@ class Edge extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":from_node_id" => $node->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -141,6 +142,7 @@ class Edge extends DB_Object {
      */
     public function setEdgeEnd(Node $node){
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -149,7 +151,7 @@ class Edge extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":to_node_id" => $node->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -178,6 +180,7 @@ class Edge extends DB_Object {
      */
     public function setWeight(int $weight): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -186,7 +189,7 @@ class Edge extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":weight" => $weight]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -214,6 +217,7 @@ class Edge extends DB_Object {
      */
     public function set2dDirection(string $direction): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -222,7 +226,7 @@ class Edge extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":direction_2d" => $direction]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -250,6 +254,7 @@ class Edge extends DB_Object {
      */
     public function set3dDirection(string $direction): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -258,7 +263,7 @@ class Edge extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":direction_3d" => $direction]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -282,13 +287,14 @@ class Edge extends DB_Object {
      */
     public static function getInstance(int $id, EPS_Map $eps_map){
         $db = $eps_map->getDB();
+        $logger = $eps_map->error_logger;
 
         $tablename = self::table_name;
 
         $queryStr = "SELECT * FROM `$tablename` WHERE id = :id"; // Each object will have a different table_name
         $resArr = $db->getResultArrayPrepared($queryStr, [":id" => $id]);
         if($resArr === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 

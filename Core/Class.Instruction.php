@@ -38,13 +38,14 @@ class Instruction extends Basic_Info {
      */
     public static function getInstance(int $id, EPS_Map $eps_map){
         $db = $eps_map->getDB();
+        $logger = $eps_map->error_logger;
 
         $tablename = self::table_name;
 
         $queryStr = "SELECT * FROM `$tablename` WHERE id = :id";
         $resArr = $db->getResultArrayPrepared($queryStr, [":id" => $id]);
         if($resArr === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 

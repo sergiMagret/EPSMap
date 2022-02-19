@@ -157,7 +157,7 @@ class DB_Access extends Logging {
      * 
      * @return PDOStatement Returns a statement to execute.
      */
-    private function replaceTokens($queryStr, $substitutions){
+    private function replaceTokens(string $queryStr, array $substitutions){
         try{
             $statement = $this->_db->prepare($queryStr);
             if($statement == false){
@@ -200,7 +200,7 @@ class DB_Access extends Logging {
      * @return array|false If everything goes OK, the array with the result is returned
      * (empty if no result is returned), on error returns false.
      */
-    function getResultArrayPrepared($queryStr, $substitutions){
+    function getResultArrayPrepared(string $queryStr, array $substitutions=[]){
         $resArr = array();
         
         $statement = $this->replaceTokens($queryStr, $substitutions);
@@ -245,7 +245,7 @@ class DB_Access extends Logging {
      * 
      * @return boolean Returns true if the query was executed correctly, false otherwise.
      */
-    function getResultPrepared($queryStr, $substitutions){
+    function getResultPrepared(string $queryStr, array $substitutions=[]){
         $res = null;
 
         $statement = $this->replaceTokens($queryStr, $substitutions);

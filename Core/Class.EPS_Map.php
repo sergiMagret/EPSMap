@@ -76,6 +76,7 @@ class EPS_Map extends Logging {
      */
     public function addDoor(string $name){
         $db = $this->getDB();
+        $logger = $this->error_logger;
         $tablename = $this->getClassname("door")::getTableName();
 
         $db->startTransaction();
@@ -83,7 +84,7 @@ class EPS_Map extends Logging {
 
         $res = $db->getResultPrepared($queryStr, [":name" => $name]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -103,6 +104,7 @@ class EPS_Map extends Logging {
      */
     public function addBuilding(string $name){
         $db = $this->getDB();
+        $logger = $this->error_logger;
         $tablename = $this->getClassname("building")::getTableName();
 
         $db->startTransaction();
@@ -110,7 +112,7 @@ class EPS_Map extends Logging {
 
         $res = $db->getResultPrepared($queryStr, [":name" => $name]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -130,6 +132,7 @@ class EPS_Map extends Logging {
      */
     public function addDestinationZone(string $name, Node $main_node){
         $db = $this->getDB();
+        $logger = $this->error_logger;
         $tablename = $this->getClassname("destination_zone")::getTableName();
 
         $db->startTransaction();
@@ -137,7 +140,7 @@ class EPS_Map extends Logging {
 
         $res = $db->getResultPrepared($queryStr, [":name" => $name, ":main_node_id" => $main_node->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -158,6 +161,7 @@ class EPS_Map extends Logging {
      */
     public function addNode(int $node_type, int $level, ?Destination_Zone $destination_zone){
         $db = $this->getDB();
+        $logger = $this->error_logger;
         $tablename = $this->getClassname("node")::getTableName();
 
         if(!Node_Type::isTypeValid($node_type)) throw new Invalid_NodeType_Exception("Invalid node type: $node_type");
@@ -169,7 +173,7 @@ class EPS_Map extends Logging {
 
         $res = $db->getResultPrepared($queryStr, [":type_id" => $node_type, ":level" => $level, ":dz_id" => $destination_zone->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -190,6 +194,7 @@ class EPS_Map extends Logging {
      */
     public function addPerson(string $name, ?Space $space=null){
         $db = $this->getDB();
+        $logger = $this->error_logger;
         $tablename = $this->getClassname("person")::getTableName();
 
         $space_id = ($space != null ? $space->getID() : null);
@@ -199,7 +204,7 @@ class EPS_Map extends Logging {
 
         $res = $db->getResultPrepared($queryStr, [":name" => $name, ":space_id" => $space_id]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -224,6 +229,7 @@ class EPS_Map extends Logging {
      */
     public function addSpace(string $name, string $alias, int $space_type, Building $building, Door $entrance_door, Node $associated_node){
         $db = $this->getDB();
+        $logger = $this->error_logger;
         $tablename = $this->getClassname("space")::getTableName();
 
         if(!Space_Type::isTypeValid($space_type)) throw new Invalid_SpaceType_Exception("Invalid space type: $space_type");
@@ -234,7 +240,7 @@ class EPS_Map extends Logging {
         $substitutions = [":name" => $name, ":alias" => $alias, ":space_type_id" => $space_type, ":building_id" => $building->getID(), ":door_id" => $entrance_door->getID(), ":node_id" => $associated_node->getID()];
         $res = $db->getResultPrepared($queryStr, $substitutions);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 

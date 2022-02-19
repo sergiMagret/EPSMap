@@ -71,6 +71,7 @@ class Node extends DB_Object {
      */
     public function setNodeType(int $type): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -79,7 +80,7 @@ class Node extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":type" => $type]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -107,6 +108,7 @@ class Node extends DB_Object {
      */
     public function setLevel(int $level): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -115,7 +117,7 @@ class Node extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":level" => $level]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -151,6 +153,7 @@ class Node extends DB_Object {
      */
     public function setDestination_Zone(Destination_Zone $zone){
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -159,7 +162,7 @@ class Node extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":zone_id" => $zone->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -184,13 +187,14 @@ class Node extends DB_Object {
      */
     public static function getInstance(int $id, EPS_Map $eps_map){
         $db = $eps_map->getDB();
+        $logger = $eps_map->error_logger;
 
         $tablename = self::table_name;
 
         $queryStr = "SELECT * FROM `$tablename` WHERE id = :id"; // Each object will have a different table_name
         $resArr = $db->getResultArrayPrepared($queryStr, [":id" => $id]);
         if($resArr === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 

@@ -82,6 +82,7 @@ class Space extends Basic_Info {
      */
     public function setAlias(?string $alias): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
         $tablename = self::table_name;
 
         $db->startTransaction();
@@ -89,7 +90,7 @@ class Space extends Basic_Info {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":name" => $alias]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -117,6 +118,7 @@ class Space extends Basic_Info {
      */
     public function setSpaceType(int $type): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
         $tablename = self::table_name;
 
         $db->startTransaction();
@@ -124,7 +126,7 @@ class Space extends Basic_Info {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":space_type_id" => $type]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -160,6 +162,7 @@ class Space extends Basic_Info {
      */
     public function setBuilding(Building $building): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
         $tablename = self::table_name;
 
         $db->startTransaction();
@@ -167,7 +170,7 @@ class Space extends Basic_Info {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":building_id" => $building->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -204,6 +207,7 @@ class Space extends Basic_Info {
      */
     public function setNode(Node $node): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
         $tablename = self::table_name;
 
         $db->startTransaction();
@@ -211,7 +215,7 @@ class Space extends Basic_Info {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":node_id" => $node->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -248,6 +252,7 @@ class Space extends Basic_Info {
      */
     public function setDoor(Door $door): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
         $tablename = self::table_name;
 
         $db->startTransaction();
@@ -255,7 +260,7 @@ class Space extends Basic_Info {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":door_id" => $door->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -280,13 +285,14 @@ class Space extends Basic_Info {
      */
     public static function getInstance(int $id, EPS_Map $eps_map){
         $db = $eps_map->getDB();
+        $logger = $eps_map->error_logger;
 
         $tablename = self::table_name;
 
         $queryStr = "SELECT * FROM `$tablename` WHERE id = :id"; // Each object will have a different table_name
         $resArr = $db->getResultArrayPrepared($queryStr, [":id" => $id]);
         if($resArr === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 

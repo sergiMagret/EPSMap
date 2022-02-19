@@ -51,6 +51,7 @@ abstract class Basic_Info extends DB_Object {
      */
     public function setName(string $name): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -59,7 +60,8 @@ abstract class Basic_Info extends DB_Object {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":name" => $name]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $this->error_logger->error($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 

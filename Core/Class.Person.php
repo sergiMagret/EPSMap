@@ -66,6 +66,7 @@ class Person extends Basic_Info {
      */
     public function setSpace(Space $space): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -74,7 +75,7 @@ class Person extends Basic_Info {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":space_id" => $space->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -111,6 +112,7 @@ class Person extends Basic_Info {
      */
     public function setDepartment(Department $department): bool {
         $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
 
         $classname = self::getTableName();
 
@@ -119,7 +121,7 @@ class Person extends Basic_Info {
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":department_id" => $department->getID()]);
         if($res === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
@@ -144,13 +146,14 @@ class Person extends Basic_Info {
      */
     public static function getInstance(int $id, EPS_Map $eps_map){
         $db = $eps_map->getDB();
+        $logger = $eps_map->error_logger;
 
         $tablename = self::table_name;
 
         $queryStr = "SELECT * FROM `$tablename` WHERE id = :id"; // Each object will have a different table_name
         $resArr = $db->getResultArrayPrepared($queryStr, [":id" => $id]);
         if($resArr === false){
-            var_dump($db->getErrorMsg());
+            $logger->error($db->getErrorMsg());
             return false;
         }
 
