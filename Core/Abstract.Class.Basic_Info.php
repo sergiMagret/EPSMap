@@ -71,6 +71,13 @@ abstract class Basic_Info extends DB_Object {
         return true;
     }
 
+    public function jsonSerialize(): array{
+        return [
+            "id" => $this->getID(),
+            "name" => $this->getName()
+        ];
+    }
+
     public abstract static function getTableName(): string;
     public static abstract function getInstanceByData(array $resArr, EPS_Map $eps_map): Basic_Info;
 }

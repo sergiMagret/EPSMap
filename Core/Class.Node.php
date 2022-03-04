@@ -173,6 +173,15 @@ class Node extends DB_Object {
         return true;
     }
 
+    public function jsonSerialize(): array {
+        return [
+            "id" => $this->getID(),
+            "type_id" => $this->getNodeType(),
+            "level" => $this->getLevel(),
+            "destination_zone" => ($this->getDestinationZone() != null ? $this->getDestinationZone()->jsonSerialize() : null)
+        ];
+    }
+
     public static function getTableName(): string {
         return self::table_name;
     }

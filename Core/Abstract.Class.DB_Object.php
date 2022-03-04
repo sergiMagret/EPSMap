@@ -4,7 +4,7 @@
  * Every database object MUST extend this class and overwrite the table_name constant
  * with its database table name.
  */
-abstract class DB_Object {
+abstract class DB_Object implements JsonSerializable {
     
     /** Main controller class
      * @var EPS_Map */

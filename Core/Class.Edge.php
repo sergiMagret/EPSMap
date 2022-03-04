@@ -273,6 +273,17 @@ class Edge extends DB_Object {
         return true;
     }
 
+    public function jsonSerialize(): array {
+        return [
+            "id" => $this->getID(),
+            "from_node" => $this->getEdgeStart()->jsonSerialize(),
+            "to_node" => $this->getEdgeEnd()->jsonSerialize(),
+            "weight" => $this->getWeight(),
+            "direction_2d" => $this->get2dDirection(),
+            "direction_3d" => $this->get3dDirection()
+        ];
+    }
+
     public static function getTableName(): string {
         return self::table_name;
     }

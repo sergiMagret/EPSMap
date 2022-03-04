@@ -71,9 +71,9 @@ class Instruction extends Basic_Info {
 }
 
 /**
- * An Instruction translated to a certan Language
+ * An Instruction translated to a certain Language
  */
-class Instruction_Translation  {
+class Instruction_Translation implements JsonSerializable {
 
     protected Instruction $_instruction;
     protected Language $_language;
@@ -116,6 +116,14 @@ class Instruction_Translation  {
      */
     public function getText(): string {
         return $this->_text;
+    }
+
+    public function jsonSerialize(): mixed {
+        return [
+            "language" => $this->_language->jsonSerialize(),
+            "instruction" => $this->_instruction->jsonSerialize(),
+            "text" => $this->_text
+        ];
     }
 }
 
