@@ -49,13 +49,15 @@ class Edge extends DB_Object {
      * Get an Edge instance, all Edges are considered bidirectionals, the directions you pass are the ones for the from-to,
      * for the reverse edge, the reverse direction will be taken.
      *
+     * @param integer $id Unique ID for the Edge
      * @param integer $from_node_id ID for the node where the edge starts
      * @param integer $to_node_id ID for the node where the edge ends
      * @param integer $weight The weight/cost for this edge
      * @param string $direction_2d Direction over a map where the edge is directed
      * @param string $direction_3d On a map whether the edge would be going up or down
      */
-    public function __construct(int $from_node_id, int $to_node_id, int $weight, string $direction_2d, string $direction_3d){
+    public function __construct(int $id, int $from_node_id, int $to_node_id, int $weight, string $direction_2d, string $direction_3d){
+        $this->_id = $id;
         $this->_from_node_id = $from_node_id;
         $this->_from_node_obj = null;
         $this->_to_node_id = $to_node_id;
@@ -272,6 +274,19 @@ class Edge extends DB_Object {
 
         return true;
     }
+    
+    /**
+     * Get the opposite node for one of the two nodes.  
+     * E.g. If the Edge goes from A to B and you request getOppositeNode(A) => B and getOppositeNode(B) => A
+     *
+     * @param Node $start_node
+     * 
+     * @return Node
+     */
+    public function getOppositeNode(Node $start_node): Node{
+        if($this->getEdgeStart(true) == $start_node->getID()) return $this->getEdgeEnd(false);
+        else return $this->getEdgeStart(false);
+    }
 
     public function jsonSerialize(): array {
         return [
@@ -323,7 +338,7 @@ class Edge extends DB_Object {
      * @return Edge
      */
     public static function getInstanceByData(array $resArr, EPS_Map $eps_map): Edge {
-        $instance = new self($resArr['from_node_id'], $resArr['to_node_id'], $resArr['weight'], $resArr['direction_2d'], $resArr['direction_3d']);
+        $instance = new self($resArr['id'], $resArr['from_node_id'], $resArr['to_node_id'], $resArr['weight'], $resArr['direction_2d'], $resArr['direction_3d']);
         $instance->setEPSMap($eps_map);
         
         return $instance;

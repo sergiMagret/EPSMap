@@ -239,12 +239,14 @@ class Node_Type {
     public const type_space =       2;
     /** The node is an internal node for the graph */
     public const type_graph_node =  3;
+    /** The node is a start point where a QR code can be scanned */
+    public const type_qr_start =    4;
     /** The node does not have a specific type, you should not use this type unless
      *  completely necessary, is preferred to add a new node type than using this type. 
      *  @deprecated */
     public const type_other =       100;
 
-    private const _available_types = [self::type_stair, self::type_space, self::type_graph_node, self::type_other];
+    private const _available_types = [self::type_stair, self::type_space, self::type_graph_node, self::type_qr_start, self::type_other];
 
     /**
      * Check if a given $type is valid

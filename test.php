@@ -14,21 +14,94 @@
     // edifici_id:          2
     // lang_id:             2 (VARCHAR)
 
-    // TODO Com sempre, no s'han de passar ni retornar mai IDs, només moure els objectes
-    // més endevant també s'haurien de fer "caches" per guardar els objectes carregats
-
-    // TODO Si CLI és 5.6 i web és 7.4, el més probable és que els scripts no funcionin pq no entendrà les coses de 7.4.
-    // per tant o tirar-ho enrere o fer accés web, efectivament, no es pot
-
+    $time_start = microtime(true);
+    $current_lang = "es";
     require_once("AppInit.php");
 
+    $graph = new Graph($eps_map->getAllNodes(), $eps_map->getAllEdges());
     echo "<pre>";
-    $res = $eps_map->addDoor("test porta!"); /// FUNCIONA!!!
-    var_dump($res);
-    echo "<br><hr><br>";
-    $res = $eps_map->addBuilding("test edifici!");
-    var_dump($res);
-    echo "</pre>";
 
+    $encode_json = function($object){
+        var_dump(json_decode(json_encode($object), true));
+    };
+
+    $ini_node = $eps_map->getNode(36);
+    $end_node = $eps_map->getNode(7);
+
+    echo "Start: ".$ini_node->getID()."\n";
+    echo "Finnish: ".$end_node->getID()."\n";
+
+    /**
+     * Extract the ordered list of Nodes from the $path
+     *
+     * @param Edge[] $path
+     * @param Node $start
+     * @param Node $finnish
+     * 
+     * @return Node[]
+     */
+    function getNodeListFromPath(array $path, Node $start, Node $finnish){
+        $prev_node = $start;
+        $nodes_list = [$prev_node];
+        foreach($path as $edge){
+            $current_node = $edge->getOppositeNode($prev_node);
+            $nodes_list[] = $current_node;
+            $prev_node = $current_node;
+        }
+
+        return $nodes_list;
+    }
+
+    /**
+     * Get the instructions to navigate the edges of the $path
+     *
+     * @param Edge[] $path
+     * @param EPS_Map $eps_map
+     * @param Language $lang
+     * 
+     * @return array[]
+     */
+    function getInstructionsListFromPath(array $path, EPS_Map $eps_map, Language $lang){
+        $instruction_ctrl = new Edge_Instructions_Controller($eps_map);
+        $instructions_list = [];
+
+        $prev_edge = $path[0];
+        
+        for($i=1; $i < count($path); $i++){
+            $current_edge = $path[$i];
+
+            $obj = null;
+            $obj['from'] = $prev_edge;
+            $obj['to'] = $current_edge;
+            $obj['text'] = $instruction_ctrl->getInstructionBetween($prev_edge, $current_edge, $lang)->getText();
+            $instructions_list[] = $obj;
+
+            $prev_edge = $current_edge;
+        }
+
+        return $instructions_list;
+    }
+    
+    /**
+     * @var Edge[] $path
+     */
+    list($path, $cost) = $graph->findShortestPath($ini_node, $end_node);
+
+    var_dump(array_map(fn($n) => $n->getID(), getNodeListFromPath($path, $ini_node, $end_node)));
+
+    $instructions_list = getInstructionsListFromPath($path, $eps_map, $eps_map->getLanguageByShortName($current_lang));
+    foreach($instructions_list as $inst){
+        echo "Weight: ".$inst['from']->getWeight()."<br>";
+        echo $inst['text']."<br>";
+    }
+    echo $instructions_list[count($instructions_list)-1]['to']->getWeight()."<br>";
+
+    // $encode_json($path);
+    echo "<br><br><b>Final cost: $cost</b><br>";
+    
+    echo "</pre>";
+    $time_end = microtime(true);
+
+    echo "<br><br><br>Total time: ".($time_end-$time_start)." s";
 
 ?>

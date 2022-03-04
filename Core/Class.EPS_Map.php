@@ -20,15 +20,16 @@ class EPS_Map extends Logging {
     public function __construct(DB_Access $db){
         $this->_db = $db;
         $this->_classnames = [
-            "door" => "Door",
             "building" => "Building",
+            "department" => "Department",
+            "destination_zone" => "Destination_Zone",
+            "door" => "Door",
             "edge" => "Edge",
+            "instruction" => "Instruction",
+            "language" => "Language",
             "node" => "Node",
             "person" => "Person",
             "space" => "Space",
-            "destination_zone" => "Destination_Zone",
-            "department" => "Department",
-            "language" => "Language"
         ];
 
         parent::__construct();
@@ -48,16 +49,15 @@ class EPS_Map extends Logging {
      * 
      * List of available classes:
      * - building
+     * - department
      * - destination_zone
      * - door
      * - edge
-     * - node_type
+     * - instruction
+     * - language
      * - node
      * - person
-     * - space_type
      * - space
-     * - department
-     * - language
      *
      * @param string $class_name
      * 
@@ -84,6 +84,7 @@ class EPS_Map extends Logging {
 
         $res = $db->getResultPrepared($queryStr, [":name" => $name]);
         if($res === false){
+            $logger->error("Error adding door with name $name", ["queryStr" => $queryStr]);
             $logger->error($db->getErrorMsg());
             return false;
         }
@@ -112,6 +113,7 @@ class EPS_Map extends Logging {
 
         $res = $db->getResultPrepared($queryStr, [":name" => $name]);
         if($res === false){
+            $logger->error("Error adding building with name $name", ["queryStr" => $queryStr]);
             $logger->error($db->getErrorMsg());
             return false;
         }
@@ -137,9 +139,11 @@ class EPS_Map extends Logging {
 
         $db->startTransaction();
         $queryStr = "INSERT INTO `$tablename` (`name`, `main_node_id`) VALUES (:name, :main_node_id)";
+        $substitutions = [":name" => $name, ":main_node_id" => $main_node->getID()];
 
-        $res = $db->getResultPrepared($queryStr, [":name" => $name, ":main_node_id" => $main_node->getID()]);
+        $res = $db->getResultPrepared($queryStr, $substitutions);
         if($res === false){
+            $logger->error("Error adding destination zone", ["queryStr" => $queryStr, "substitutions" => $substitutions]);
             $logger->error($db->getErrorMsg());
             return false;
         }
@@ -170,9 +174,11 @@ class EPS_Map extends Logging {
 
         $db->startTransaction();
         $queryStr = "INSERT INTO `$tablename` (`nodes_type_id`, `level`, `dest_zone_id`) VALUES (:type_id, :level, :dz_id)";
+        $substitutions = [":type_id" => $node_type, ":level" => $level, ":dz_id" => $destination_zone_id];
 
-        $res = $db->getResultPrepared($queryStr, [":type_id" => $node_type, ":level" => $level, ":dz_id" => $destination_zone->getID()]);
+        $res = $db->getResultPrepared($queryStr, $substitutions);
         if($res === false){
+            $logger->error("Error adding node", ["queryStr" => $queryStr, "substitutions" => $substitutions]);
             $logger->error($db->getErrorMsg());
             return false;
         }
@@ -201,9 +207,11 @@ class EPS_Map extends Logging {
 
         $db->startTransaction();
         $queryStr = "INSERT INTO `$tablename` (`name`, `space_id`) VALUES (:name, :space_id)";
+        $substitutions = [":name" => $name, ":space_id" => $space_id];
 
-        $res = $db->getResultPrepared($queryStr, [":name" => $name, ":space_id" => $space_id]);
+        $res = $db->getResultPrepared($queryStr, $substitutions);
         if($res === false){
+            $logger->error("Error adding person", ["queryStr" => $queryStr, "substitutions" => $substitutions]);
             $logger->error($db->getErrorMsg());
             return false;
         }
@@ -240,6 +248,7 @@ class EPS_Map extends Logging {
         $substitutions = [":name" => $name, ":alias" => $alias, ":space_type_id" => $space_type, ":building_id" => $building->getID(), ":door_id" => $entrance_door->getID(), ":node_id" => $associated_node->getID()];
         $res = $db->getResultPrepared($queryStr, $substitutions);
         if($res === false){
+            $logger->error("Error adding space", ["queryStr" => $queryStr, "substitutions" => $substitutions]);
             $logger->error($db->getErrorMsg());
             return false;
         }
@@ -330,7 +339,7 @@ class EPS_Map extends Logging {
     }
     
     /**
-     * Get a department by its database ID
+     * Get a language by its database ID
      *
      * @param int $id
      * 
@@ -339,10 +348,76 @@ class EPS_Map extends Logging {
     public function getLanguage(int $id){
         return $this->getClassname("language")::getInstance($id, $this);
     }
+    
+    public function getLanguageByShortName(string $short_name){
+        return $this->getClassname("language")::getInstanceByShortName($short_name, $this);
+    }
+    
+    /**
+     * Get an instruction by its database ID
+     *
+     * @param int $id
+     * 
+     * @return Instruction|null|false The Instruction instance, null if not found or false on error
+     */
+    public function getInstruction(int $id){
+        return $this->getClassname("instruction")::getInstance($id, $this);
+    }
 
     // TODO De fet quasi que només es necessita un mètode principal: vull anar d'aqui a aqui, com hi vaig? I ha de retornar el camí
     // TODO Clarament també els altres mètodes per fer gets de professors, etc, etc
     // TODO Els edges (i pot ser nodes) s'haurien de tractar a part, pot ser fer una classe graph??
+
+
+    /**
+     * Get all the Nodes
+     *
+     * @return Node[]|false The list of Nodes or false on error
+     */
+    public function getAllNodes(){
+        $db = $this->getDB();
+        $logger = $this->error_logger;
+        $classname = $this->getClassname("node");
+        $tablename = $classname::getTableName();
+
+        $queryStr = "SELECT * FROM `$tablename`";
+        $resArr = $db->getResultArrayPrepared($queryStr);
+        if($resArr === false){
+            $logger->error("Error getting all nodes", ["queryStr" => $queryStr]);
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $nodes = [];
+        foreach($resArr as $row) $nodes[] = $classname::getInstanceByData($row, $this);
+
+        return $nodes;
+    }
+    
+    /**
+     * Get all the Edges
+     *
+     * @return Edge[]|false The list of Edges or false on error
+     */
+    public function getAllEdges(){
+        $db = $this->getDB();
+        $logger = $this->error_logger;
+        $classname = $this->getClassname("edge");
+        $tablename = $classname::getTableName();
+
+        $queryStr = "SELECT * FROM `$tablename`";
+        $resArr = $db->getResultArrayPrepared($queryStr);
+        if($resArr === false){
+            $logger->error("Error getting all edges", ["queryStr" => $queryStr]);
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $edges = [];
+        foreach($resArr as $row) $edges[] = $classname::getInstanceByData($row, $this);
+
+        return $edges;
+    }
 
 
     public function findPath(Node $from, Node $to){

@@ -52,8 +52,34 @@ class Language extends Basic_Info {
 
         $tablename = self::table_name;
 
-        $queryStr = "SELECT * FROM `$tablename` WHERE id = :id"; // Each object will have a different table_name
+        $queryStr = "SELECT * FROM `$tablename` WHERE `id` = :id"; // Each object will have a different table_name
         $resArr = $db->getResultArrayPrepared($queryStr, [":id" => $id]);
+        if($resArr === false){
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        if(count($resArr) == 0) return null;
+
+        return self::getInstanceByData($resArr[0], $eps_map);
+    }
+    
+    /**
+     * Get a Language instance by its short_name
+     *
+     * @param integer $id The unique short_name for this Language, if the short_name is repeated, then the first result will be taken
+     * @param EPS_Map $eps_map Current EPS_Map instance
+     * 
+     * @return Language|null|false The Language instance, null if not found or false on error
+     */
+    public static function getInstanceByShortName(string $short_name, EPS_Map $eps_map){
+        $db = $eps_map->getDB();
+        $logger = $eps_map->error_logger;
+
+        $tablename = self::table_name;
+
+        $queryStr = "SELECT * FROM `$tablename` WHERE `short_name` = :short_name";
+        $resArr = $db->getResultArrayPrepared($queryStr, [":short_name" => $short_name]);
         if($resArr === false){
             $logger->error($db->getErrorMsg());
             return false;
