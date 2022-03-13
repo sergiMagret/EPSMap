@@ -154,6 +154,37 @@ class EPS_Map extends Logging {
 
         return $this->getDestinationZone($dz_id);
     }
+    
+    /**
+     * Add a new Department into the database
+     *
+     * @param string $name The name for the new Department
+     * @param string|null $alias The alias for the new Department
+     * 
+     * @return Department|false
+     */
+    public function addDepartment(string $name, ?string $alias=null){
+        $db = $this->getDB();
+        $logger = $this->error_logger;
+        $tablename = $this->getClassname("department")::getTableName();
+
+        $db->startTransaction();
+        $queryStr = "INSERT INTO `$tablename` (`name`, `alias`) VALUES (:name, :alias)";
+        $substitutions = [":name" => $name, ":alias" => $alias];
+
+        $res = $db->getResultPrepared($queryStr, $substitutions);
+        if($res === false){
+            $logger->error("Error adding alias", ["queryStr" => $queryStr, "substitutions" => $substitutions]);
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $alias_id = $db->getInsertID();
+
+        $db->commitTransaction();
+
+        return $this->getDepartment($alias_id);
+    }
 
     /**
      * Add a new node into the database
