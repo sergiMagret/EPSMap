@@ -14,7 +14,7 @@ class Graph {
     protected array $_edges;
     
     /** List of Edges indexed by [node_id_start][node_id_end]
-     * @var Edge[] */
+     * @var Edge[][] */
     public array $_graph_as_array;
 
     /**
@@ -62,8 +62,10 @@ class Graph {
         // TODO Hi haurà un moment en que serà més eficient fer una query SQL amb el WHERE que toca que no fer el recorregut per tots els nodes
         $nodes = [];
         
+        // The adjecent nodes are the ones with edges from $node to other nodes
+        // AND from orther nodes to $node, but with a bidirectional edge
         foreach($this->_nodes as $n){
-            if(isset($this->_graph_as_array[$n->getID()][$node->getID()])){ // From other nodes to $node
+            if(isset($this->_graph_as_array[$n->getID()][$node->getID()]) && $this->_graph_as_array[$n->getID()][$node->getID()]->isBidirectional()){ // From other nodes to $node
                 $nodes[] = $this->_graph_as_array[$n->getID()][$node->getID()]->getEdgeStart();
             }else if(isset($this->_graph_as_array[$node->getID()][$n->getID()])){ // From $node to other nodes
                 $nodes[] = $this->_graph_as_array[$node->getID()][$n->getID()]->getEdgeEnd();
@@ -75,14 +77,25 @@ class Graph {
     }
 
     /**
-     * Get the Edge between $start and $finish
+     * Get the Edge between $start and $finish.  
+     * The edge does not necessarily go from $start to $finish, this method gets the edge (if exists) between $start and $finish
+     * but if the edge is bidirectional, then the returned Edge might go from $finish to $start
      *
      * @param Node $start
      * @param Node $finish
      * @return Edge|null The Edge or null if there is no Edge between $start and $finish
      */
     public function getEdgeBetween(Node $start, Node $finish): ?Edge {
-        return $this->_graph_as_array[$start->getID()][$finish->getID()] ?? $this->_graph_as_array[$finish->getID()][$start->getID()] ?? null;
+        // First check if there is an edge directly from $start to $finish
+        if(isset($this->_graph_as_array[$start->getID()][$finish->getID()])) 
+            return $this->_graph_as_array[$start->getID()][$finish->getID()];
+
+        // Then check if there is an edge from $finish to $start and that edge is bidirectional
+        if(isset($this->_graph_as_array[$finish->getID()][$start->getID()]) && $this->_graph_as_array[$finish->getID()][$start->getID()]->isBidirectional()) 
+            return $this->_graph_as_array[$finish->getID()][$start->getID()];
+
+        // If neither of the above is true, then return null since there is no edge from $start to $finish
+        return null;
     }
 
     /**

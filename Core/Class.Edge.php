@@ -45,6 +45,10 @@ class Edge extends DB_Object {
      * @var int */
     protected string $_direction_3d;
 
+    /** Whether the edge is bidirectional or just one way.
+     * @var boolean */
+    protected bool $_bidirectional;
+
     /**
      * Get an Edge instance, all Edges are considered bidirectionals, the directions you pass are the ones for the from-to,
      * for the reverse edge, the reverse direction will be taken.
@@ -55,8 +59,9 @@ class Edge extends DB_Object {
      * @param integer $weight The weight/cost for this edge
      * @param string $direction_2d Direction over a map where the edge is directed
      * @param string $direction_3d On a map whether the edge would be going up or down
+     * @param integer $bidirectional Whether the edge is bidirectional or just one way
      */
-    public function __construct(int $id, int $from_node_id, int $to_node_id, int $weight, string $direction_2d, string $direction_3d){
+    public function __construct(int $id, int $from_node_id, int $to_node_id, int $weight, string $direction_2d, string $direction_3d, int $bidirectional){
         $this->_id = $id;
         $this->_from_node_id = $from_node_id;
         $this->_from_node_obj = null;
@@ -65,6 +70,7 @@ class Edge extends DB_Object {
         $this->_weight = $weight;
         $this->_direction_2d = $direction_2d;
         $this->_direction_3d = $direction_3d;
+        $this->_bidirectional = boolval($bidirectional);
     }
 
     /**
@@ -102,10 +108,10 @@ class Edge extends DB_Object {
         $db = $this->getEPSMap()->getDB();
         $logger = $this->getEPSMap()->error_logger;
 
-        $classname = self::getTableName();
+        $tablename = self::getTableName();
 
         $db->startTransaction();
-        $queryStr = "UPDATE `$classname` SET `from_node_id` = :from_node_id WHERE `id` = :id";
+        $queryStr = "UPDATE `$tablename` SET `from_node_id` = :from_node_id WHERE `id` = :id";
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":from_node_id" => $node->getID()]);
         if($res === false){
@@ -146,10 +152,10 @@ class Edge extends DB_Object {
         $db = $this->getEPSMap()->getDB();
         $logger = $this->getEPSMap()->error_logger;
 
-        $classname = self::getTableName();
+        $tablename = self::getTableName();
 
         $db->startTransaction();
-        $queryStr = "UPDATE `$classname` SET `to_node_id` = :to_node_id WHERE `id` = :id";
+        $queryStr = "UPDATE `$tablename` SET `to_node_id` = :to_node_id WHERE `id` = :id";
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":to_node_id" => $node->getID()]);
         if($res === false){
@@ -184,10 +190,10 @@ class Edge extends DB_Object {
         $db = $this->getEPSMap()->getDB();
         $logger = $this->getEPSMap()->error_logger;
 
-        $classname = self::getTableName();
+        $tablename = self::getTableName();
 
         $db->startTransaction();
-        $queryStr = "UPDATE `$classname` SET `weight` = :weight WHERE `id` = :id";
+        $queryStr = "UPDATE `$tablename` SET `weight` = :weight WHERE `id` = :id";
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":weight" => $weight]);
         if($res === false){
@@ -221,10 +227,10 @@ class Edge extends DB_Object {
         $db = $this->getEPSMap()->getDB();
         $logger = $this->getEPSMap()->error_logger;
 
-        $classname = self::getTableName();
+        $tablename = self::getTableName();
 
         $db->startTransaction();
-        $queryStr = "UPDATE `$classname` SET `direction_2d` = :direction_2d WHERE `id` = :id";
+        $queryStr = "UPDATE `$tablename` SET `direction_2d` = :direction_2d WHERE `id` = :id";
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":direction_2d" => $direction]);
         if($res === false){
@@ -258,10 +264,10 @@ class Edge extends DB_Object {
         $db = $this->getEPSMap()->getDB();
         $logger = $this->getEPSMap()->error_logger;
 
-        $classname = self::getTableName();
+        $tablename = self::getTableName();
 
         $db->startTransaction();
-        $queryStr = "UPDATE `$classname` SET `direction_3d` = :direction_3d WHERE `id` = :id";
+        $queryStr = "UPDATE `$tablename` SET `direction_3d` = :direction_3d WHERE `id` = :id";
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":direction_3d" => $direction]);
         if($res === false){
@@ -271,6 +277,43 @@ class Edge extends DB_Object {
 
         $db->commitTransaction();
         $this->_direction_3d = $direction;
+
+        return true;
+    }
+
+    /**
+     * Return whether this edge is bidirectional between start and end nodes or just from start to end
+     *
+     * @return boolean
+     */
+    public function isBidirectional(): bool {
+        return $this->_bidirectional;
+    }
+    
+    /**
+     * Set whether this Edge is bidirectional between start and nodes or just from start to end
+     *
+     * @param boolean $is_bidirectional
+     * 
+     * @return boolean True on success, false on failure
+     */
+    public function setBidirectional(bool $is_bidirectional): bool {
+        $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
+
+        $tablename = self::getTableName();
+
+        $db->startTransaction();
+        $queryStr = "UPDATE `$tablename` SET `bidirectional` = :is_bi WHERE `id` = :id";
+
+        $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":is_bi" => intval($is_bidirectional)]);
+        if($res === false){
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $db->commitTransaction();
+        $this->_bidirectional = $is_bidirectional;
 
         return true;
     }
@@ -338,7 +381,7 @@ class Edge extends DB_Object {
      * @return Edge
      */
     public static function getInstanceByData(array $resArr, EPS_Map $eps_map): Edge {
-        $instance = new self($resArr['id'], $resArr['from_node_id'], $resArr['to_node_id'], $resArr['weight'], $resArr['direction_2d'], $resArr['direction_3d']);
+        $instance = new self($resArr['id'], $resArr['from_node_id'], $resArr['to_node_id'], $resArr['weight'], $resArr['direction_2d'], $resArr['direction_3d'], $resArr['bidirectional']);
         $instance->setEPSMap($eps_map);
         
         return $instance;

@@ -40,7 +40,7 @@ class Destination_Zone extends Basic_Info {
     public function getMainNode(bool $id = false) {
         if($id === true) return $this->_main_node_id;
         else{
-            if($this->_main_node_obj === null) $this->_main_node_obj = $this->getEPSMap()->getDestinationZone($this->_main_node_id);
+            if($this->_main_node_obj === null) $this->_main_node_obj = $this->getEPSMap()->getNode($this->_main_node_id);
             return $this->_main_node_obj;
         }
     }
