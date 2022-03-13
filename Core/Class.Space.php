@@ -271,6 +271,17 @@ class Space extends Basic_Info {
         return true;
     }
 
+    /**
+     * Get the destination zone where this space belongs
+     *
+     * @param boolean $id Whether to return the full instance for the Destination Zone or just the ID
+     * 
+     * @return Destination_Zone|integer|false The Destination Zone instance or its ID depending on $id, false on error
+     */
+    public function getDestinationZone(bool $id = false){
+        return $this->getNode()->getDestinationZone($id);
+    }
+
     public static function getTableName(): string {
         return self::table_name;
     }

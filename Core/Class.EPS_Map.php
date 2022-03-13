@@ -67,6 +67,10 @@ class EPS_Map extends Logging {
         return $this->_classnames[strtolower($class_name)] ?? null;
     }
 
+    /**********************************************************/
+    /* START OF THE FUNCTIONS TO CREATE NEW OBJECTS IN THE DB */
+    /**********************************************************/
+
     /**
      * Add a new door into the database
      *
@@ -290,7 +294,14 @@ class EPS_Map extends Logging {
 
         return $this->getSpace($person_id);
     }
-    
+
+    /**********************************************************/
+    /** END OF THE FUNCTIONS TO CREATE NEW OBJECTS IN THE DB **/
+    /**********************************************************/
+
+    /**********************************************************/
+    /****************** START OF THE GETTERS ******************/
+    /**********************************************************/
 
     /**
      * Get a door by its database ID
@@ -380,6 +391,13 @@ class EPS_Map extends Logging {
         return $this->getClassname("language")::getInstance($id, $this);
     }
     
+    /**
+     * Get a language by its short name
+     *
+     * @param string $short_name
+     * 
+     * @return Language|null|false The Language instance, null if not found or false on error
+     */
     public function getLanguageByShortName(string $short_name){
         return $this->getClassname("language")::getInstanceByShortName($short_name, $this);
     }
@@ -393,6 +411,94 @@ class EPS_Map extends Logging {
      */
     public function getInstruction(int $id){
         return $this->getClassname("instruction")::getInstance($id, $this);
+    }
+
+    /**********************************************************/
+    /******************* END OF THE GETTERS *******************/
+    /**********************************************************/
+    
+    /**********************************************************/
+    /************* START OF THE SEARCH FUNCTIONS **************/
+    /**********************************************************/
+
+    /**
+     * Get a list of doors whose name start with $search_name
+     *
+     * @param string $search_name
+     * @return Door[]|false The list of Doors (empty is none) or false on error
+     */
+    public function searchDoor(string $search_name){
+        return $this->getClassname("door")::searchByName($search_name, $this);
+    }
+    
+    /**
+     * Get a list of buildings whose name start with $search_name
+     *
+     * @param string $search_name
+     * @return Building[]|false The list of Buildings (empty is none) or false on error
+     */
+    public function searchBuilding(string $search_name){
+        return $this->getClassname("building")::searchByName($search_name, $this);
+    }
+    
+    /**
+     * Get a list of destination zones whose name start with $search_name
+     *
+     * @param string $search_name
+     * @return Destination_Zone[]|false The list of Destination_Zones (empty is none) or false on error
+     */
+    public function searchDestinationZone(string $search_name){
+        return $this->getClassname("destination_zone")::searchByName($search_name, $this);
+    }
+    
+    /**
+     * Get a list of persons whose name start with $search_name
+     *
+     * @param string $search_name
+     * @return Person[]|false The list of Persons (empty is none) or false on error
+     */
+    public function searchPerson(string $search_name){
+        return $this->getClassname("person")::searchByName($search_name, $this);
+    }
+    
+    /**
+     * Get a list of spaces whose name start with $search_name
+     *
+     * @param string $search_name
+     * @return Space[]|false The list of Spaces (empty is none) or false on error
+     */
+    public function searchSpace(string $search_name){
+        return $this->getClassname("space")::searchByName($search_name, $this);
+    }
+    
+    /**
+     * Get a list of departments whose name start with $search_name
+     *
+     * @param string $search_name
+     * @return Department[]|false The list of Departments (empty is none) or false on error
+     */
+    public function searchDepartment(string $search_name){
+        return $this->getClassname("department")::searchByName($search_name, $this);
+    }
+    
+    /**
+     * Get a list of languages whose name start with $search_name
+     *
+     * @param string $search_name
+     * @return Language[]|false The list of Languages (empty is none) or false on error
+     */
+    public function searchLanguage(string $search_name){
+        return $this->getClassname("language")::searchByName($search_name, $this);
+    }
+    
+    /**
+     * Get a list of instructions whose name start with $search_name
+     *
+     * @param string $search_name
+     * @return Instruction[]|false The list of Instructions (empty is none) or false on error
+     */
+    public function searchInstruction(string $search_name){
+        return $this->getClassname("instruction")::searchByName($search_name, $this);
     }
 
     // TODO De fet quasi que només es necessita un mètode principal: vull anar d'aqui a aqui, com hi vaig? I ha de retornar el camí

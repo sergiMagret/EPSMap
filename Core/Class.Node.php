@@ -42,6 +42,7 @@ class Node extends DB_Object {
         $this->_node_type_id = $node_type_id;
         $this->_level = $level;
         $this->_dest_zone_id = $dest_zone_id;
+        $this->_dest_zone_obj = null;
     }
 
     /**
