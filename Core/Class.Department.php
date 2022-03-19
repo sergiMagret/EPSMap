@@ -60,6 +60,27 @@ class Department extends Basic_Info {
         return true;
     }
 
+    public static function searchByName(string $name, EPS_Map $eps_map, int $limit=20, int $offset=0){
+        // Notice the use of static instead of self to use the implemented method in the extended class
+        $db = $eps_map->getDB();
+        $logger = $eps_map->error_logger;
+        $tablename = static::getTableName();
+
+        $queryStr = "SELECT * FROM `$tablename` WHERE LOWER(`name`) LIKE CONCAT(LOWER(:name), \"%\") OR LOWER(`alias`) LIKE CONCAT(LOWER(:name2), \"%\") ORDER BY `name` LIMIT :limit OFFSET :offset";
+        $substitutions = [":name" => $name, ":name2" => $name, ":limit" => $limit, ":offset" => $offset];
+        $resArr = $db->getResultArrayPrepared($queryStr, $substitutions);
+        if($resArr === false){
+            $logger->error("Error searching by name or alias", ["queryStr" => $queryStr, "substitutions" => $substitutions]);
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $basic_info = [];
+        foreach($resArr as $row) $basic_info[] = static::getInstanceByData($row, $eps_map);
+
+        return $basic_info;
+    }
+
     public static function getTableName(): string {
         return self::table_name;
     }

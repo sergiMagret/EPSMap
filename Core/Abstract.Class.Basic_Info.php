@@ -72,14 +72,23 @@ abstract class Basic_Info extends DB_Object {
         return true;
     }
 
-    public static function searchByName(string $name, EPS_Map $eps_map){
+    /**
+     * Search in the database for an object with name $name
+     *
+     * @param string $name
+     * @param EPS_Map $eps_map
+     * @param integer $limit
+     * @param integer $offset
+     * @return Basic_Info[]|false The list of found objects or false on error
+     */
+    public static function searchByName(string $name, EPS_Map $eps_map, int $limit=20, int $offset=0){
         // Notice the use of static instead of self to use the implemented method in the extended class
         $db = $eps_map->getDB();
         $logger = $eps_map->error_logger;
         $tablename = static::getTableName();
 
-        $queryStr = "SELECT * FROM `$tablename` WHERE LOWER(`name`) LIKE CONCAT(LOWER(:name), \"%\")";
-        $substitutions = [":name" => $name];
+        $queryStr = "SELECT * FROM `$tablename` WHERE LOWER(`name`) LIKE CONCAT(LOWER(:name), \"%\") ORDER BY `name` LIMIT :limit OFFSET :offset";
+        $substitutions = [":name" => $name, ":limit" => $limit, ":offset" => $offset];
         $resArr = $db->getResultArrayPrepared($queryStr, $substitutions);
         if($resArr === false){
             $logger->error("Error searching by name", ["queryStr" => $queryStr, "substitutions" => $substitutions]);

@@ -424,81 +424,105 @@ class EPS_Map extends Logging {
     /**
      * Get a list of doors whose name start with $search_name
      *
-     * @param string $search_name
+     * @param string $search_name The text to search
+     * @param int $limit The limit of values to return
+     * @param int $offset The offset for the values to return
+     * 
      * @return Door[]|false The list of Doors (empty is none) or false on error
      */
-    public function searchDoor(string $search_name){
-        return $this->getClassname("door")::searchByName($search_name, $this);
+    public function searchDoor(string $search_name, int $limit=50, int $offset=0){
+        return $this->getClassname("door")::searchByName($search_name, $this, $limit, $offset);
     }
     
     /**
      * Get a list of buildings whose name start with $search_name
      *
-     * @param string $search_name
+     * @param string $search_name The text to search
+     * @param int $limit The limit of values to return
+     * @param int $offset The offset for the values to return
+     * 
      * @return Building[]|false The list of Buildings (empty is none) or false on error
      */
-    public function searchBuilding(string $search_name){
-        return $this->getClassname("building")::searchByName($search_name, $this);
+    public function searchBuilding(string $search_name, int $limit=50, int $offset=0){
+        return $this->getClassname("building")::searchByName($search_name, $this, $limit, $offset);
     }
     
     /**
      * Get a list of destination zones whose name start with $search_name
      *
-     * @param string $search_name
+     * @param string $search_name The text to search
+     * @param int $limit The limit of values to return
+     * @param int $offset The offset for the values to return
+     * 
      * @return Destination_Zone[]|false The list of Destination_Zones (empty is none) or false on error
      */
-    public function searchDestinationZone(string $search_name){
-        return $this->getClassname("destination_zone")::searchByName($search_name, $this);
+    public function searchDestinationZone(string $search_name, int $limit=50, int $offset=0){
+        return $this->getClassname("destination_zone")::searchByName($search_name, $this, $limit, $offset);
     }
     
     /**
      * Get a list of persons whose name start with $search_name
      *
-     * @param string $search_name
+     * @param string $search_name The text to search
+     * @param int $limit The limit of values to return
+     * @param int $offset The offset for the values to return
+     * 
      * @return Person[]|false The list of Persons (empty is none) or false on error
      */
-    public function searchPerson(string $search_name){
-        return $this->getClassname("person")::searchByName($search_name, $this);
+    public function searchPerson(string $search_name, int $limit=50, int $offset=0){
+        return $this->getClassname("person")::searchByName($search_name, $this, $limit, $offset);
     }
     
     /**
      * Get a list of spaces whose name start with $search_name
      *
-     * @param string $search_name
+     * @param string $search_name The text to search
+     * @param int $limit The limit of values to return
+     * @param int $offset The offset for the values to return
+     * 
      * @return Space[]|false The list of Spaces (empty is none) or false on error
      */
-    public function searchSpace(string $search_name){
-        return $this->getClassname("space")::searchByName($search_name, $this);
+    public function searchSpace(string $search_name, int $limit=50, int $offset=0){
+        return $this->getClassname("space")::searchByName($search_name, $this, $limit, $offset);
     }
     
     /**
      * Get a list of departments whose name start with $search_name
      *
-     * @param string $search_name
+     * @param string $search_name The text to search
+     * @param int $limit The limit of values to return
+     * @param int $offset The offset for the values to return
+     * 
      * @return Department[]|false The list of Departments (empty is none) or false on error
      */
-    public function searchDepartment(string $search_name){
-        return $this->getClassname("department")::searchByName($search_name, $this);
+    public function searchDepartment(string $search_name, int $limit=50, int $offset=0){
+        return $this->getClassname("department")::searchByName($search_name, $this, $limit, $offset);
     }
     
     /**
      * Get a list of languages whose name start with $search_name
      *
-     * @param string $search_name
+     * @param string $search_name The text to search
+     * @param int $limit The limit of values to return
+     * @param int $offset The offset for the values to return
+     * 
      * @return Language[]|false The list of Languages (empty is none) or false on error
      */
-    public function searchLanguage(string $search_name){
-        return $this->getClassname("language")::searchByName($search_name, $this);
+    public function searchLanguage(string $search_name, int $limit=50, int $offset=0){
+        return $this->getClassname("language")::searchByName($search_name, $this, $limit, $offset);
     }
     
     /**
      * Get a list of instructions whose name start with $search_name
      *
-     * @param string $search_name
+     * @param string $search_name The text to search
+     * @param int $limit The limit of values to return
+     * @param int $offset The offset for the values to return
+     * 
      * @return Instruction[]|false The list of Instructions (empty is none) or false on error
      */
-    public function searchInstruction(string $search_name){
-        return $this->getClassname("instruction")::searchByName($search_name, $this);
+    public function searchInstruction(string $search_name, int $limit=50, int $offset=0){
+        return $this->getClassname("instruction")::searchByName($search_name, $this, $limit, $offset);
     }
 
     // TODO De fet quasi que només es necessita un mètode principal: vull anar d'aqui a aqui, com hi vaig? I ha de retornar el camí
