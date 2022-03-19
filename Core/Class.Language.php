@@ -34,6 +34,13 @@ class Language extends Basic_Info {
         return $this->_short_name;
     }
 
+    public function jsonSerialize(): array {
+        $json_res = parent::jsonSerialize();
+        $json_res['short_name'] = $this->getShortName();
+        
+        return $json_res;
+    }
+
     public static function getTableName(): string {
         return self::table_name;
     }

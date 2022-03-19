@@ -174,12 +174,21 @@ class Node extends DB_Object {
         return true;
     }
 
+    protected function jsonSerializeIDs(): array {
+        return [
+            "id" => $this->getID(),
+            "type_id" => $this->getNodeType(),
+            "level" => $this->getLevel(),
+            "destination_zone" => ($this->getDestinationZone(true) != null ? $this->getDestinationZone(true) : null)
+        ];
+    }
+
     public function jsonSerialize(): array {
         return [
             "id" => $this->getID(),
             "type_id" => $this->getNodeType(),
             "level" => $this->getLevel(),
-            "destination_zone" => ($this->getDestinationZone() != null ? $this->getDestinationZone()->jsonSerialize() : null)
+            "destination_zone" => ($this->getDestinationZone() != null ? $this->getDestinationZone()->jsonSerializeIDs() : null)
         ];
     }
 

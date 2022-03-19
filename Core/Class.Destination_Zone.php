@@ -72,6 +72,13 @@ class Destination_Zone extends Basic_Info {
         return true;
     }
 
+    public function jsonSerialize(): array {
+        $json_res = parent::jsonSerialize();
+        $json_res['main_node'] = $this->getMainNode()->jsonSerializeIDs();
+
+        return $json_res;
+    }
+
     public static function getTableName(): string {
         return self::table_name;
     }

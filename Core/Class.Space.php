@@ -302,6 +302,29 @@ class Space extends Basic_Info {
 
         return $basic_info;
     }
+
+    public function jsonSerializeIDs(): array {
+        $json_res = parent::jsonSerializeIDs();
+        $json_res['alias'] = $this->getAlias();
+        $json_res['space_type_id'] = $this->getSpaceType();
+        $json_res['building'] = $this->getBuilding(true);
+        $json_res['door'] = $this->getDoor(true);
+        $json_res['node'] = $this->getNode(true);
+        
+        return $json_res;
+    }
+
+    public function jsonSerialize(): array {
+        $json_res = parent::jsonSerialize();
+        $json_res['alias'] = $this->getAlias();
+        $json_res['space_type_id'] = $this->getSpaceType();
+        $json_res['building'] = $this->getBuilding()->jsonSerializeIDs();
+        $json_res['door'] = $this->getDoor()->jsonSerializeIDs();
+        $json_res['node'] = $this->getNode()->jsonSerializeIDs();
+        
+        return $json_res;
+    }
+
     public static function getTableName(): string {
         return self::table_name;
     }

@@ -81,6 +81,13 @@ class Department extends Basic_Info {
         return $basic_info;
     }
 
+    public function jsonSerialize(): array {
+        $json_res = parent::jsonSerialize();
+        $json_res['alias'] = $this->getAlias();
+
+        return $json_res;
+    }
+
     public static function getTableName(): string {
         return self::table_name;
     }

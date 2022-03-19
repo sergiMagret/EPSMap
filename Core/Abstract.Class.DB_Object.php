@@ -33,6 +33,15 @@ abstract class DB_Object implements JsonSerializable {
     }
 
     /**
+     * This method should be called instead of jsonSerialize when serializing objects that extend this class.  
+     * This is done to avoid infinite recursivity between objects.  
+     * This method will only get the IDs of the objects instead of the whole JSON object.
+     *
+     * @return array
+     */
+    protected abstract function jsonSerializeIDs(): array;
+
+    /**
      * Get the database table name for the current object
      *
      * @return string

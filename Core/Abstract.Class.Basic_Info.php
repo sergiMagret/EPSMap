@@ -102,6 +102,10 @@ abstract class Basic_Info extends DB_Object {
         return $basic_info;
     }
 
+    protected function jsonSerializeIDs(): array {
+        return $this->jsonSerialize();
+    }
+
     public function jsonSerialize(): array{
         return [
             "id" => $this->getID(),

@@ -331,11 +331,23 @@ class Edge extends DB_Object {
         else return $this->getEdgeStart(false);
     }
 
+    protected function jsonSerializeIDs(): array {
+        // Return only the IDs of the nested objects
+        return [
+            "id" => $this->getID(),
+            "from_node" => $this->getEdgeStart(true),
+            "to_node" => $this->getEdgeEnd(true),
+            "weight" => $this->getWeight(),
+            "direction_2d" => $this->get2dDirection(),
+            "direction_3d" => $this->get3dDirection()
+        ];
+    }
+
     public function jsonSerialize(): array {
         return [
             "id" => $this->getID(),
-            "from_node" => $this->getEdgeStart()->jsonSerialize(),
-            "to_node" => $this->getEdgeEnd()->jsonSerialize(),
+            "from_node" => $this->getEdgeStart()->jsonSerializeIDs(),
+            "to_node" => $this->getEdgeEnd()->jsonSerializeIDs(),
             "weight" => $this->getWeight(),
             "direction_2d" => $this->get2dDirection(),
             "direction_3d" => $this->get3dDirection()
