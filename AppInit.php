@@ -8,7 +8,11 @@ require_once("conf/LogInit.php");
 // If the BASE_FOLDER is not in the include path, the program can't be executed
 $include_path = ini_get("include_path");
 if(strpos(ini_get("include_path"), BASE_FOLDER) === false){
-    die("You need to include the root path for the repository in the include path through Apache config, .htacces, php.ini, .user.ini, etc");
+    // If the BASE_FOLDER is not included in the include_path try to include here
+    ini_set("include_path", $include_path.":".BASE_FOLDER);
+    $include_path = ini_get("include_path");
+    if(strpos(ini_get("include_path"), BASE_FOLDER) === false) // If it was not added, then die() the script
+        die("You need to include the root path for the repository in the include path through Apache config, .htacces, php.ini, .user.ini, etc\ninclude_path: $include_path\nBASE_FOLDER: ".BASE_FOLDER);
 }
 
 require_once("Core/Class.Logging.php");

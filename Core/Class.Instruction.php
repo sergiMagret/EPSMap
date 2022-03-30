@@ -320,7 +320,7 @@ class Instruction_Translation implements JsonSerializable {
         return $this->_text;
     }
 
-    public function jsonSerialize(): mixed {
+    public function jsonSerialize(): array {
         return [
             "language" => $this->_language->jsonSerialize(),
             "instruction" => $this->_instruction->jsonSerialize(),

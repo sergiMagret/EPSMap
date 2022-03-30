@@ -310,10 +310,11 @@ class Space extends Basic_Info {
         $json_res['building'] = $this->getBuilding(true);
         $json_res['door'] = $this->getDoor(true);
         $json_res['node'] = $this->getNode(true);
+        $json_res['destination_zone'] = $this->getDestinationZone(true);
         
         return $json_res;
     }
-
+    
     public function jsonSerialize(): array {
         $json_res = parent::jsonSerialize();
         $json_res['alias'] = $this->getAlias();
@@ -321,6 +322,7 @@ class Space extends Basic_Info {
         $json_res['building'] = $this->getBuilding()->jsonSerializeIDs();
         $json_res['door'] = $this->getDoor()->jsonSerializeIDs();
         $json_res['node'] = $this->getNode()->jsonSerializeIDs();
+        $json_res['destination_zone'] = $this->getDestinationZone()->jsonSerializeIDs();
         
         return $json_res;
     }
