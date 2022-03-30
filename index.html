@@ -1,9 +1,3 @@
-<?php
-
-require_once("AppInit.php");
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,15 +13,35 @@ require_once("AppInit.php");
     <link rel="stylesheet" href="media/styles.css">
 </head>
 <body>
-    <div>
-        <h1>EPSMap</h1>
-        <h2>Sistema de navegació intern pels edificis de la EPS</h2>
-    </div>
-    <div>
-        <h3>Selecciona la teva destinació</h3>
+    <header>
+        <div class="header-title">
+            <h1>EPSMap</h1>
+            <h2>Sistema de navegació intern pels edificis de la EPS</h2>
+        </div>
+    </header>
+    <div class="content">
+        <div class="main-title">
+            <h3>Selecciona la teva destinació</h3>
+        </div>
         <div>
             <div class="search-option-wrapper">
-                <label class="toggle" for="department">
+                <div style="display: flex;">
+                    <input type="checkbox" style="margin-top: 7px; margin-right: 5px;" class="" id="department" name="department"/>
+                    <label class="toggle" for="department">Department</label>
+                </div>
+                <div style="display: flex;">
+                    <input type="checkbox" style="margin-top: 7px; margin-right: 5px;" class="" id="destination_zone" name="destination_zone"/>
+                    <label class="toggle" for="destination_zone">Destination Zone</label>
+                </div>
+                <div style="display: flex;">
+                    <input type="checkbox" style="margin-top: 7px; margin-right: 5px;" class="" id="people" name="people"/>
+                    <label class="toggle" for="people">People</label>
+                </div>
+                <div style="display: flex;">
+                    <input type="checkbox" style="margin-top: 7px; margin-right: 5px;" class="" id="space" name="space"/>
+                    <label class="toggle" for="space">Space</label>
+                </div>
+                <!-- <label class="toggle" for="department">
                     <input type="checkbox" class="toggle__input" id="department" name="department"/>
                     <span class="toggle-track">
                         <span class="toggle-indicator"></span>
@@ -54,7 +68,7 @@ require_once("AppInit.php");
                         <span class="toggle-indicator"></span>
                     </span>
                     Space
-                </label>
+                </label> -->
             </div>
             <!-- <div class="searcher-wrapper">
                 <div id="searcher"></div>
@@ -64,7 +78,8 @@ require_once("AppInit.php");
             </div> -->
 
             <!-- <br><br><br> -->
-            <div id="testing"></div>
+            <div id="vs-searcher"></div>
+            <div id="path-instructions"></div>
         </div>
     </div>
     <script src="media/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -75,7 +90,12 @@ require_once("AppInit.php");
     <script>
         const VirtualSelect_Searcher = function(config){
 
-            if(!config.main) throw new Error("Main node to attach the searcher not given");
+            if(!config.main) throw new Error("Main HTML node to attach the searcher not given");
+            if($(config.main).length == 0) throw new Error("The given HTML node is empty");
+            if(!config.initial_node_id) throw new Error("Initial node ID for the search was not given");
+            if(config.initial_node_id == NaN) throw new Error("Initial node ID must be a number");
+            const initial_node_id = config.initial_node_id;
+            let search_timeout = null;
 
             // If the variable starts with "$", that means it holds a jQuery object
 
@@ -96,7 +116,10 @@ require_once("AppInit.php");
                     markSearchResults: true,
                     showSelectedOptionsFirst: true,
                     onServerSearch: function(value, virtualSelect){
-                        searchValue(value).then(response => updateSelect(response, virtualSelect)).catch(jqXHR => console.error(jqXHR));
+                        clearTimeout(search_timeout);
+                        search_timeout = setTimeout(() => {
+                            searchValue(value).then(response => updateSelect(response, virtualSelect)).catch(jqXHR => console.error(jqXHR));
+                        }, 200);
                     }
                 });
 
@@ -116,6 +139,9 @@ require_once("AppInit.php");
 
             /**
              * Search a value in the database
+             * @param {String} value Value to search
+             * 
+             * @returns {Promise} On resolve returns the list of places found, on reject returns the jqXHR error object
              */
             async function searchValue(value){
                 return new Promise((resolve, reject) => {
@@ -142,43 +168,64 @@ require_once("AppInit.php");
                     })
                 })
             }
+
+            async function searchPathTo(destination_node_id){
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        type: "GET",
+                        data: {
+                            initial_node_id: initial_node_id,
+                            destination_node_id: destination_node_id
+                        },
+                        url: "actions/get_path.php",
+                        success: response => resolve(response),
+                        error: jqXHR => reject(jqXHR)
+                    })
+                });
+            }
     
             /**
              * Update the virtualSelect
+             * 
+             * @param {Array} new_values An array with the new values returned by the server
+             * 
+             * @returns {void}
              */
-            function updateSelect(response){
+            function updateSelect(new_values){
+                // The values for the VirtualSelect have a preappended random value to avoid problems when two differents objects point to the same final node id
+                // The values need to be unique, and without the random value, they wouldn't be unique, you can get the actual ID with value.split("-")[1]
                 let option_groups = [];
-                if(checkbox_departments && response.department && response.department.length > 0){
+                if(checkbox_departments && new_values.department && new_values.department.length > 0){
                     let options = {
                         "label": "Departments",
                         "options": []
                     }
-                    options.options.push(...response.department.map(elem => {return {"label": elem.name, "value": elem.id}}))
+                    options.options.push(...new_values.department.map(elem => {return {"label": elem.name, "value": randomID(3)+"-"+elem.id}}))
                     option_groups.push(options);
                 }
-                if(checkbox_destination_zones && response.destination_zone && response.destination_zone.length > 0){
+                if(checkbox_destination_zones && new_values.destination_zone && new_values.destination_zone.length > 0){
                     let options = {
                         "label": "Destination Zones",
                         "options": []
                     }
-                    options.options.push(...response.destination_zone.map(elem => {return {"label": elem.name, "value": elem.id}}))
+                    options.options.push(...new_values.destination_zone.map(elem => {return {"label": elem.name, "value": randomID(3)+"-"+elem.main_node.id}}))
                     option_groups.push(options);
                 }
-                if(checkbox_spaces && response.space && response.space.length > 0){
+                if(checkbox_spaces && new_values.space && new_values.space.length > 0){
                     let options = {
                         "label": "Spaces",
                         "options": []
                     }
-                    options.options.push(...response.space.map(elem => {return {"label": elem.name, "value": elem.id}}))
+                    options.options.push(...new_values.space.map(elem => {return {"label": elem.name, "value": randomID(3)+"-"+elem.destination_zone.main_node}}))
                     option_groups.push(options);
                 }
                 
-                if(checkbox_people && response.people && response.people.length > 0){
+                if(checkbox_people && new_values.people && new_values.people.length > 0){
                     let options = {
-                        "label": "Spaces",
+                        "label": "People",
                         "options": []
                     }
-                    options.options.push(...response.people.map(elem => {return {"label": elem.name, "value": elem.id}}))
+                    options.options.push(...new_values.people.map(elem => {return {"label": elem.name, "value": randomID(3)+"-"+elem.id}}))
                     option_groups.push(options);
                 }
     
@@ -216,15 +263,23 @@ require_once("AppInit.php");
                 if($vs.val() != "") $button.prop("disabled", 0);
                 else $button.prop("disabled", 1);
             });
+
+            $button.on('click', event => {
+                const final_node_id = $vs.val().split("-")[1];
+                console.log(final_node_id);
+                searchPathTo(final_node_id).then(path => config.onSelectDestination(final_node_id, path.instructions, path.total_cost)).catch(jqXHR => console.error(jqXHR));
+            });
         }
 
 
 
-
+        const searchParams = (new URL(window.location.href)).searchParams;
+        const node_id = parseInt(searchParams.get("i_id"));
+        const language = searchParams.get("lang") || "es";
 
 
         VirtualSelect_Searcher({
-            main: $("#testing"),
+            main: $("#vs-searcher"),
             departments: {
                 checkbox: $("input[type=checkbox][name=department]")
             },
@@ -236,6 +291,21 @@ require_once("AppInit.php");
             },
             spaces: {
                 checkbox: $("input[type=checkbox][name=space]")
+            },
+            initial_node_id: node_id,
+            language: "es",
+            onSelectDestination: (destination, path, total_cost) => {
+                let path_instructions = $("#path-instructions");
+                path.forEach(edge => {
+                    const from_edge = edge.from;
+                    const to_edge = edge.to;
+                    const instruction_translation = edge.instruction_translation;
+
+                    path_instructions.append($("<div/>", {
+                            class: "instruction-text"
+                        }).text(instruction_translation.text)
+                    );
+                })
             }
         })
     </script>

@@ -1,4 +1,64 @@
+:root {
+    --dark-red: #651d32;
+    --yellow: #f5e1a4;
+    --dark-orange: #9d432c;
+    --blue: #001489;
+    --dark-blue: #1c2441;
+    --gray: #d9d9d6;
+    --green: #126680;
+    --white: #ffffff;
+}
 
+html {
+    font-size: 20px;
+}
+
+body {
+    color: var(--dark-blue);
+    font-family: 'Akkurat', Arial, Helvetica, sans-serif;
+    border: 5px solid var(--dark-red);
+    padding: 0;
+    height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Tiempos', Georgia, 'Times New Roman', Times, serif;
+}
+
+header {
+    background-color: var(--dark-red);
+    outline: 1px solid var(--dark-red);
+    border: 0px solid var(--dark-red);
+    /* margin: -1px; */
+    color: var(--white);
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: sticky;
+}
+
+.header-title {
+    text-align: center;
+}
+
+.header-title h2 {
+    font-size: 1.2rem;
+}
+
+.content {
+    margin-top: 40px;
+}
+
+.content .main-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.content .main-title h3 {
+    font-size: 1.2rem;
+}
 
 .searcher-wrapper {
     display: flex;
@@ -20,6 +80,22 @@
     height: auto;
     margin-bottom: 20px;
     justify-content: space-evenly;
+}
+
+.btn-primary,
+.btn-primary:disabled,
+.btn-primary:focus {
+    background-color: var(--blue);
+    border-color: var(--blue);
+}
+
+.btn:focus,
+.btn:active,
+.btn:focus:active,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:focus:active {
+    box-shadow: none;
 }
 
 
@@ -109,7 +185,8 @@
 }
 
 .toggle__input:checked+.toggle-track .toggle-indicator {
-    background: #126680;
+    /* background: #126680; */
+    background: var(--green);
     transform: translateX(19px);
 }
 
@@ -117,3 +194,27 @@
     opacity: 1;
     transition: opacity 0.25s ease-in-out;
 }
+
+@media screen and (max-width: 750px) {
+    /* .search-option-wrapper {
+        flex-direction: column;
+    }    */
+}
+
+/* @media (prefers-color-scheme: dark) {
+    :root {
+        --dark-red: #651d32;
+        --yellow: #f5e1a4;
+        --dark-orange: #9d432c;
+        --blue: #00158a;
+        --dark-blue: #1c2441;
+        --gray: #d9d9d6;
+        --green: #126680;
+        --white: #ffffff;
+    }
+
+    body {
+        background-color: #191b24;
+        color: var(--gray);
+    }
+} */
