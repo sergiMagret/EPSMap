@@ -274,7 +274,7 @@
 
 
         const searchParams = (new URL(window.location.href)).searchParams;
-        const node_id = parseInt(searchParams.get("i_id"));
+        const node_id = parseInt(searchParams.get("i_id")) || 1;
         const language = searchParams.get("lang") || "es";
 
 
@@ -296,6 +296,7 @@
             language: "es",
             onSelectDestination: (destination, path, total_cost) => {
                 let path_instructions = $("#path-instructions");
+                path_instructions.empty();
                 path.forEach(edge => {
                     const from_edge = edge.from;
                     const to_edge = edge.to;

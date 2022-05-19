@@ -29,6 +29,14 @@ class Node extends DB_Object {
      * @var Destination_Zone */
     protected ?Destination_Zone $_dest_zone_obj;
 
+    /** Latitude with 2 numbers and 5 decimals where this node is located on a map
+     * @var float */
+    protected float $_latitude;
+    
+    /** Longitude with 2 numbers and 5 decimals where this node is located on a map
+     * @var float */
+    protected float $_longitude;
+
     /**
      * Create a new Node instance
      *
@@ -36,13 +44,17 @@ class Node extends DB_Object {
      * @param integer $node_type_id ID for the Node_Type this Node is
      * @param integer|null $level In what level the node is located in the building
      * @param integer|null $dest_zone_id When the Node belongs to a Destination_Zone, the ID for that Destination_Zone
+     * @param float $latitude Latitude with 2 numbers and 5 decimals where this node is located on a map
+     * @param float $longitude Longitude with 2 numbers and 5 decimals where this node is located on a map
      */
-    public function __construct(int $id, int $node_type_id, ?int $level, ?int $dest_zone_id){
+    public function __construct(int $id, int $node_type_id, ?int $level, ?int $dest_zone_id, float $latitude, float $longitude){
         $this->_id = $id;
         $this->_node_type_id = $node_type_id;
         $this->_level = $level;
         $this->_dest_zone_id = $dest_zone_id;
         $this->_dest_zone_obj = null;
+        $this->_latitude = $latitude;
+        $this->_longitude = $longitude;
     }
 
     /**
@@ -74,10 +86,10 @@ class Node extends DB_Object {
         $db = $this->getEPSMap()->getDB();
         $logger = $this->getEPSMap()->error_logger;
 
-        $classname = self::getTableName();
+        $tablename = self::getTableName();
 
         $db->startTransaction();
-        $queryStr = "UPDATE `$classname` SET `nodes_type_id` = :type WHERE `id` = :id";
+        $queryStr = "UPDATE `$tablename` SET `nodes_type_id` = :type WHERE `id` = :id";
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":type" => $type]);
         if($res === false){
@@ -111,10 +123,10 @@ class Node extends DB_Object {
         $db = $this->getEPSMap()->getDB();
         $logger = $this->getEPSMap()->error_logger;
 
-        $classname = self::getTableName();
+        $tablename = self::getTableName();
 
         $db->startTransaction();
-        $queryStr = "UPDATE `$classname` SET `level` = :level WHERE `id` = :id";
+        $queryStr = "UPDATE `$tablename` SET `level` = :level WHERE `id` = :id";
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":level" => $level]);
         if($res === false){
@@ -156,10 +168,10 @@ class Node extends DB_Object {
         $db = $this->getEPSMap()->getDB();
         $logger = $this->getEPSMap()->error_logger;
 
-        $classname = self::getTableName();
+        $tablename = self::getTableName();
 
         $db->startTransaction();
-        $queryStr = "UPDATE `$classname` SET `dest_zone_id` = :zone_id WHERE `id` = :id";
+        $queryStr = "UPDATE `$tablename` SET `dest_zone_id` = :zone_id WHERE `id` = :id";
 
         $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":zone_id" => $zone->getID()]);
         if($res === false){
@@ -174,11 +186,87 @@ class Node extends DB_Object {
         return true;
     }
 
+    /**
+     * Get the latitude where this node is located on a map
+     *
+     * @return float
+     */
+    public function getLatitude(): float {
+        return $this->_latitude;
+    }
+
+    /**
+     * Set the latitude where this node is located on a map
+     *
+     * @param float $latitude The new latitude for this node with up to 5 decimals
+     * 
+     * @return boolean True on sucess, false on failure
+     */
+    public function setLatitude(float $latitude): bool {
+        $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
+
+        $tablename = self::getTableName();
+
+        $db->startTransaction();
+        $queryStr = "UPDATE `$tablename` SET `latitude` = :latitude WHERE `id` = :id";
+
+        $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":latitude" => $latitude]);
+        if($res === false){
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $db->commitTransaction();
+        $this->_level = $latitude;
+
+        return true;
+    }
+    
+    /**
+     * Get the longitude where this node is located on a map
+     *
+     * @return float
+     */
+    public function getLongitude(): float {
+        return $this->_longitude;
+    }
+
+    /**
+     * Set the longitude where this node is located on a map
+     *
+     * @param float $longitude The new longitude for this node with up to 5 decimals
+     * 
+     * @return boolean True on sucess, false on failure
+     */
+    public function setLongitude(float $longitude): bool {
+        $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
+
+        $tablename = self::getTableName();
+
+        $db->startTransaction();
+        $queryStr = "UPDATE `$tablename` SET `longitude` = :longitude WHERE `id` = :id";
+
+        $res = $db->getResultPrepared($queryStr, [":id" => $this->getID(), ":longitude" => $longitude]);
+        if($res === false){
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $db->commitTransaction();
+        $this->_level = $longitude;
+
+        return true;
+    }
+
     protected function jsonSerializeIDs(): array {
         return [
             "id" => $this->getID(),
             "type_id" => $this->getNodeType(),
             "level" => $this->getLevel(),
+            "latitude" => $this->getLatitude(),
+            "longitude" => $this->getLongitude(),
             "destination_zone" => ($this->getDestinationZone(true) != null ? $this->getDestinationZone(true) : null)
         ];
     }
@@ -188,6 +276,8 @@ class Node extends DB_Object {
             "id" => $this->getID(),
             "type_id" => $this->getNodeType(),
             "level" => $this->getLevel(),
+            "latitude" => $this->getLatitude(),
+            "longitude" => $this->getLongitude(),
             "destination_zone" => ($this->getDestinationZone() != null ? $this->getDestinationZone()->jsonSerializeIDs() : null)
         ];
     }
@@ -231,7 +321,7 @@ class Node extends DB_Object {
      * @return Node
      */
     public static function getInstanceByData(array $resArr, EPS_Map $eps_map): Node {
-        $instance = new self($resArr['id'], $resArr['nodes_type_id'], $resArr['level'], $resArr['dest_zone_id']);
+        $instance = new self($resArr['id'], $resArr['nodes_type_id'], $resArr['level'], $resArr['dest_zone_id'], $resArr['latitude'], $resArr['longitude']);
         $instance->setEPSMap($eps_map);
         
         return $instance;

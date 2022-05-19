@@ -144,9 +144,9 @@ class Graph {
                 // echo "<br>";
             }
 
-            // echo "Finalment \$min_dist: $min_dist i \$vert_act: {$vert_act->getID()}<br><br>";
-
+            
             if($vert_act != null){
+                // echo "Finalment \$min_dist: $min_dist i \$vert_act: {$vert_act->getID()}<br><br>";
                 $def[$vert_act->getID()] = true;
                 // echo "Marcant {$vert_act->getID()} com a definitiu<br>";
                 // echo "Nodes adjecents a {$vert_act->getID()}: ".implode(", ", array_map(fn($e) => $e->getID(), $this->getAdjecentNodes($vert_act)))."<br>";

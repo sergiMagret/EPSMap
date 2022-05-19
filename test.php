@@ -18,18 +18,29 @@
     $current_lang = "es";
     require_once("AppInit.php");
 
+    // var_dump(array_map(fn($e) => $e->getName()."<br>", $eps_map->searchDepartment("enginyeria")));
+    // exit;
+
     $graph = new Graph($eps_map->getAllNodes(), $eps_map->getAllEdges());
     echo "<pre>";
 
     $encode_json = function($object){
+        echo "<pre>";
         var_dump(json_decode(json_encode($object), true));
+        echo "</pre>";
     };
 
-    $ini_node = $eps_map->getNode(36);
-    $end_node = $eps_map->getNode(7);
+    // $encode_json($eps_map->getSpace(1));
+    // exit;
+
+    $ini_node = $eps_map->getNode(1);
+    // $end_space = $eps_map->getSpace(4);
+    // $end_node = $end_space->getDestinationZone()->getMainNode();
+    $end_node = $eps_map->getNode(8);
 
     echo "Start: ".$ini_node->getID()."\n";
-    echo "Finnish: ".$end_node->getID()."\n";
+    echo "Finnish: "; //.$end_space->getName()." (".$end_space->getNode(true).") belonging to destination zone ".$end_space->getDestinationZone()->getName()." (".$end_space->getDestinationZone(true).")";
+    echo " assigned to node ".$end_node->getID()."\n";
 
     /**
      * Extract the ordered list of Nodes from the $path
@@ -73,7 +84,8 @@
             $obj = null;
             $obj['from'] = $prev_edge;
             $obj['to'] = $current_edge;
-            $obj['text'] = $instruction_ctrl->getInstructionBetween($prev_edge, $current_edge, $lang)->getText();
+            $instr = $instruction_ctrl->getInstructionBetween($prev_edge, $current_edge, $lang);
+            $obj['text'] = $instr == null ? "<em>Missing instruction from ".$prev_edge->getID()." (".$prev_edge->getEdgeStart(true).", ".$prev_edge->getEdgeEnd(true).") to ".$current_edge->getID()." (".$current_edge->getEdgeStart(true).", ".$current_edge->getEdgeEnd(true).")"."</em>" : $instr->getText();
             $instructions_list[] = $obj;
 
             $prev_edge = $current_edge;
@@ -86,18 +98,24 @@
      * @var Edge[] $path
      */
     list($path, $cost) = $graph->findShortestPath($ini_node, $end_node);
+    // var_dump($path);
+    // var_dump($cost);
+    // exit;
 
+    echo "\n";
     var_dump(array_map(fn($n) => $n->getID(), getNodeListFromPath($path, $ini_node, $end_node)));
+    echo "\n";
 
     $instructions_list = getInstructionsListFromPath($path, $eps_map, $eps_map->getLanguageByShortName($current_lang));
     foreach($instructions_list as $inst){
-        echo "Weight: ".$inst['from']->getWeight()."<br>";
+        echo "From ".$inst['from']->getID()." to ".$inst['to']->getID().": ";
+        echo $inst['from']->getWeight()." meters -> ";
         echo $inst['text']."<br>";
     }
-    echo $instructions_list[count($instructions_list)-1]['to']->getWeight()."<br>";
+    echo $instructions_list[count($instructions_list)-1]['to']->getWeight()." meters <br>";
 
     // $encode_json($path);
-    echo "<br><br><b>Final cost: $cost</b><br>";
+    echo "<br><br><b>Final cost: $cost meters</b><br>";
     
     echo "</pre>";
     $time_end = microtime(true);
