@@ -75,6 +75,7 @@ function getInstructionsListFromPath(array $path, EPS_Map $eps_map, Language $la
         //     "Missing instruction from ".$prev_edge->getID()." (".$prev_edge->getEdgeStart(true).", ".$prev_edge->getEdgeEnd(true).") to ".$current_edge->getID()." (".$current_edge->getEdgeStart(true).", ".$current_edge->getEdgeEnd(true).")" : 
         //     $instr->getText();
         $obj['instruction_translation'] = $instr;
+        $obj['has_image'] = $instruction_ctrl->getInstructionImageBetween($prev_edge, $current_edge) != null;
         $instructions_list[] = $obj;
 
         $prev_edge = $current_edge;

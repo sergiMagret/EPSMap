@@ -209,6 +209,109 @@ class Edge_Instructions_Controller {
         
         return false;
     }
+
+    /**
+     * Get the system path to the image for the instruction between edges $previous and $next
+     *
+     * @param Edge $previous
+     * @param Edge $next
+     * 
+     * @return string|null|false The system path to the image on success, null if there is no image between edges or false on error
+     */
+    public function getInstructionImageBetween(Edge $previous, Edge $next) {
+        $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
+        
+        $tablename = self::edge_instructions_table_name;
+        
+        $queryStr = "SELECT `image_name` FROM `$tablename` WHERE `from_edge_id` = :from_id AND `to_edge_id` = :to_id";
+        $substitutions = [":from_id" => $previous->getID(), ":to_id" => $next->getID()];
+        $resArr = $db->getResultArrayPrepared($queryStr, $substitutions);
+        if($resArr === false){
+            $logger->error("Error getting image_name between edges ".$previous->getID()." and ".$next->getID(), ["queryStr" => $queryStr, "substitutions" => $substitutions]);
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        if(count($resArr) != 1){
+            $logger->warning("The list of image instruction names returned between edges ".$previous->getID()." and ".$next->getID()." is ".count($resArr).", should be 1", ["queryStr" => $queryStr, "substitutions" => $substitutions]);
+            $logger->warning("The first position of the array will be taken");
+            $logger->warning(print_r($resArr, true));
+        }
+
+        if(count($resArr) == 0 || $resArr[0]['image_name'] == null) return null;
+
+        $path = INSTRUCTION_IMAGE_FOLDER.$resArr[0]['image_name'];
+
+        if(!file_exists($path)){
+            $logger->error("Image instruction between edges ".$previous->getID()." and ".$next->getID()." does not exist");
+            $logger->error("Path: $path");
+            return false;
+        }
+
+        return $path;
+    }
+
+    /**
+     * Set the instruction image between edges $previous and $next
+     *
+     * @param Edge $previous
+     * @param Edge $next
+     * @param string|null $image_path The path to the image uploaded to the server,
+     * null if you want to remove the image for the instruction
+     * 
+     * @return boolean True on success, false otherwise
+     */
+    public function setInstructionImageBetween(Edge $previous, Edge $next, ?string $image_path): bool {
+        $db = $this->getEPSMap()->getDB();
+        $logger = $this->getEPSMap()->error_logger;
+        
+        $image_name = md5(time() . rand(1, 5) . rand(10, 500));
+        $extension = pathinfo($image_path, PATHINFO_EXTENSION);
+        if($extension) $image_name .= ".".$extension;
+        
+        $tablename = self::edge_instructions_table_name;
+
+        if($image_path == null){
+            // Get the name for the image to delete it
+            $queryStr = "SELECT `image_name` FROM `$tablename` WHERE `from_edge_id` = :from_id AND `to_edge_id` = :to_id";
+            $substitutions = [":from_id" => $previous->getID(), ":to_id" => $next->getID()];
+            $resArr = $db->getResultArrayPrepared($queryStr, $substitutions);
+            if($resArr === false){
+                $logger->error("Error checking image name between edges ".$previous->getID()." and ".$next->getID(), ["queryStr" => $queryStr, "substitutions" => $substitutions]);
+                $logger->error($db->getErrorMsg());
+                $db->rollbackTransaction();
+                return false;
+            }
+
+            $res = unlink(INSTRUCTION_IMAGE_FOLDER.$resArr[0]['image_name']);
+            if($res === false){
+                $logger->error("Error removing instruction image from ".INSTRUCTION_IMAGE_FOLDER.$resArr[0]['image_name']);
+                return false;
+            }
+        }else{
+            $res = rename($image_path, INSTRUCTION_IMAGE_FOLDER.$image_name);
+            if($res === false){
+                $logger->error("Error moving uploaded image from $image_path to ".INSTRUCTION_IMAGE_FOLDER.$image_name);
+                return false;
+            }
+        }
+        
+        $db->startTransaction();
+        $queryStr = "UPDATE `$tablename` SET `image_name` = :image_name WHERE `from_edge_id` = :from_id AND `to_edge_id` = :to_id";
+        $substitutions = [":image_name" => $image_name, ":from_id" => $previous->getID(), ":to_id" => $next->getID()];
+        $resArr = $db->getResultPrepared($queryStr, $substitutions);
+        if($resArr === false){
+            $logger->error("Error updating image between edges ".$previous->getID()." and ".$next->getID(), ["queryStr" => $queryStr, "substitutions" => $substitutions]);
+            $logger->error($db->getErrorMsg());
+            $db->rollbackTransaction();
+            return false;
+        }
+        
+        $db->commitTransaction();
+
+        return true;
+    }
 }
 
 /**
@@ -220,6 +323,12 @@ class Instruction extends Basic_Info {
     
     private const table_name = "instructions";
 
+    /**
+     * Create a new Instruction instance
+     *
+     * @param integer $id Unique id for the instruction
+     * @param string $name Name for the instruction
+     */
     public function __construct(int $id, string $name){
         parent::__construct($id, $name);
         $this->_id = $id;

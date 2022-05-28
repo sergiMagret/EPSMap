@@ -381,6 +381,17 @@ class EPS_Map extends Logging {
     }
     
     /**
+     * Get an edge by its database ID
+     *
+     * @param int $id
+     * 
+     * @return Edge|null|false The Edge instance, null if not found or false on error
+     */
+    public function getEdge(int $id){
+        return $this->getClassname("edge")::getInstance($id, $this);
+    }
+    
+    /**
      * Get a language by its database ID
      *
      * @param int $id
