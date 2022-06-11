@@ -79,9 +79,11 @@
 
             <!-- <br><br><br> -->
             <div id="vs-searcher"></div>
-            <div id="path-instructions"></div>
+            <div id="path-instructions" class="d-none"></div>
         </div>
     </div>
+    <div id="dark-background" class="d-none"></div>
+    <div id="fullscreen-image" class="d-none"></div>
     <script src="media/jquery-3.6.0/jquery-3.6.0.min.js"></script>
     <script src="media/bootstrap-v4.6.1/bootstrap.bundle.min.js"></script>
     <script src="media/virtualselect-1.0.26/virtual-select.min.js"></script>
@@ -101,7 +103,8 @@
 
             let $button = $("<button/>", { // Button to search
                     "class": "searcher-button btn btn-primary btn-sm",
-                    "disabled": 1
+                    "disabled": 1,
+                    "type": "button"
                 }).text("Search"),
                 
                 $vs = $("<div/>", { // Div where the vs-comp will be placed
@@ -296,6 +299,7 @@
             language: "es",
             onSelectDestination: (destination, path, total_cost, initial_turn=null) => {
                 let path_instructions = $("#path-instructions");
+                path_instructions.removeClass("d-none");
                 path_instructions.empty();
                 if(initial_turn){
                     path_instructions.append($("<div/>", {
@@ -318,16 +322,62 @@
                         class: "instruction-text"
                     }).text(instruction_translation.text);
 
+                    const move_forward_text = $("<div/>", {
+                        class: "instruction-move"
+                    }).text("Move forward " + from_edge.weight + " meters");
+                    
+                    path_instructions.append(move_forward_text);
+
                     
                     const instruction_wrapper = ($("<div/>", {
-                            class: "instruction-wrapper"
-                        }).append(instruction_image, instruction_text)
+                        class: "instruction-wrapper" + (has_image ? " has-image" : "")
+                    }).append(instruction_image, instruction_text)
                     );
-
+                    
                     path_instructions.append(instruction_wrapper);
-                })
+                });
+                
+                const move_forward_text = $("<div/>", {
+                    class: "instruction-move"
+                }).text("Move forward " + path[path.length -1].to.weight + " meters");
+
+                path_instructions.append(move_forward_text);
+                
             }
-        })
+        });
+
+        /**
+         * Attach an event listener to open the images in full screen and close them
+         * once the user tap anywhere else than the image
+         */
+        var FullScreenImage = function(){
+            const close_image = () => {
+                console.log(event);
+                if(event.target != $("#fullscreen-image img")[0]){
+                    console.log("HIDE");
+                    $("body").removeClass("noscroll");
+                    $("#dark-background").addClass("d-none");
+                    $("#fullscreen-image").addClass("d-none");
+                    $(document.body).off('click', close_image);
+                }
+            };
+
+            $("#path-instructions").on("click", ".instruction-image img", event => {
+                console.log(event.currentTarget);
+                $("body").addClass("noscroll");
+                $("#dark-background").removeClass("d-none");
+                const fullscreen_image = $("#fullscreen-image");
+                fullscreen_image.removeClass("d-none");
+                fullscreen_image.empty();
+                fullscreen_image.append($("<img/>", {
+                    src: event.currentTarget.src
+                }));
+
+                setTimeout(() => {
+                    $(document.body).on('click', close_image);
+                }, 100);
+            });
+        }();
     </script>
 </body>
 </html>
