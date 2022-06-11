@@ -18,7 +18,7 @@ body {
     font-family: 'Akkurat', Arial, Helvetica, sans-serif;
     border: 5px solid var(--dark-red);
     padding: 0;
-    height: 100vh;
+    min-height: 100vh;height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -81,6 +81,35 @@ header {
     margin-bottom: 20px;
     justify-content: space-evenly;
 }
+
+#path-instructions {
+    background-color: var(--gray);
+    padding: 5px;
+}
+
+#path-instructions .instruction-wrapper {
+    background-color: var(--white);
+    margin: 10px 0px;
+    padding: 5px;
+}
+
+#path-instructions .instruction-wrapper.has-image {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    align-content: flex-start;
+    column-gap: 10px;
+}
+
+#path-instructions .instruction-wrapper .instruction-image {
+    width: 20%;
+}
+
+#path-instructions .instruction-wrapper .instruction-image img {
+    width: 100%;
+}
+
 
 .btn-primary,
 .btn-primary:disabled,

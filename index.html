@@ -92,9 +92,9 @@
 
             if(!config.main) throw new Error("Main HTML node to attach the searcher not given");
             if($(config.main).length == 0) throw new Error("The given HTML node is empty");
-            if(!config.initial_node_id) throw new Error("Initial node ID for the search was not given");
-            if(config.initial_node_id == NaN) throw new Error("Initial node ID must be a number");
-            const initial_node_id = config.initial_node_id;
+            if(!config.capture_point_id) throw new Error("Capture point ID for the search was not given");
+            if(config.capture_point_id == NaN) throw new Error("Capture point ID must be a number");
+            const capture_point_id = config.capture_point_id;
             let search_timeout = null;
 
             // If the variable starts with "$", that means it holds a jQuery object
@@ -174,7 +174,7 @@
                     $.ajax({
                         type: "GET",
                         data: {
-                            initial_node_id: initial_node_id,
+                            capture_point_id: capture_point_id,
                             destination_node_id: destination_node_id
                         },
                         url: "actions/get_path.php",
@@ -267,14 +267,14 @@
             $button.on('click', event => {
                 const final_node_id = $vs.val().split("-")[1];
                 console.log(final_node_id);
-                searchPathTo(final_node_id).then(path => config.onSelectDestination(final_node_id, path.instructions, path.total_cost)).catch(jqXHR => console.error(jqXHR));
+                searchPathTo(final_node_id).then(path => config.onSelectDestination(final_node_id, path.instructions, path.total_cost, path.initial_turn)).catch(jqXHR => console.error(jqXHR));
             });
         }
 
 
 
         const searchParams = (new URL(window.location.href)).searchParams;
-        const node_id = parseInt(searchParams.get("i_id")) || 1;
+        const capture_point_id = parseInt(searchParams.get("cp_id")) || 1;
         const language = searchParams.get("lang") || "es";
 
 
@@ -292,20 +292,39 @@
             spaces: {
                 checkbox: $("input[type=checkbox][name=space]")
             },
-            initial_node_id: node_id,
+            capture_point_id: capture_point_id,
             language: "es",
-            onSelectDestination: (destination, path, total_cost) => {
+            onSelectDestination: (destination, path, total_cost, initial_turn=null) => {
                 let path_instructions = $("#path-instructions");
                 path_instructions.empty();
+                if(initial_turn){
+                    path_instructions.append($("<div/>", {
+                            class: "instruction-wrapper"
+                        }).append($("<div/>", { class: "instruction-text" }).text("Initial turn: " + initial_turn))
+                    );
+                }
                 path.forEach(edge => {
                     const from_edge = edge.from;
                     const to_edge = edge.to;
                     const instruction_translation = edge.instruction_translation;
+                    const has_image = edge.has_image;
+                    const instruction_image = has_image ? $("<div/>", {
+                        class: "instruction-image"
+                    }).append($("<img/>", {
+                        src: "actions/getInstructionImage.php?initial_edge_id="+from_edge.id+"&destination_edge_id="+to_edge.id
+                    })) : null;
 
-                    path_instructions.append($("<div/>", {
-                            class: "instruction-text"
-                        }).text(instruction_translation.text)
+                    const instruction_text = $("<div/>", {
+                        class: "instruction-text"
+                    }).text(instruction_translation.text);
+
+                    
+                    const instruction_wrapper = ($("<div/>", {
+                            class: "instruction-wrapper"
+                        }).append(instruction_image, instruction_text)
                     );
+
+                    path_instructions.append(instruction_wrapper);
                 })
             }
         })

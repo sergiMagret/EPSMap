@@ -21,6 +21,7 @@ class EPS_Map extends Logging {
         $this->_db = $db;
         $this->_classnames = [
             "building" => "Building",
+            "capture_point" => "CapturePoint",
             "department" => "Department",
             "destination_zone" => "Destination_Zone",
             "door" => "Door",
@@ -49,6 +50,7 @@ class EPS_Map extends Logging {
      * 
      * List of available classes:
      * - building
+     * - capture_point
      * - department
      * - destination_zone
      * - door
@@ -288,11 +290,42 @@ class EPS_Map extends Logging {
             return false;
         }
 
-        $person_id = $db->getInsertID();
+        $space_id = $db->getInsertID();
 
         $db->commitTransaction();
 
-        return $this->getSpace($person_id);
+        return $this->getSpace($space_id);
+    }
+
+    /**
+     * Add a new capture point into the database
+     *
+     * @param Node $node The node where the CapturePoint will be attached
+     * @param string $face_direction direction the user is facing when capturing the point (one of the Directions)
+     * 
+     * @return CapturePoint|false
+     */
+    public function addCapturePoint(Node $node, string $face_direction){
+        $db = $this->getDB();
+        $logger = $this->error_logger;
+        $tablename = $this->getClassname("capture_point")::getTableName();
+
+        $db->startTransaction();
+        $queryStr = "INSERT INTO `$tablename` (`node_id`, `face_direction`) VALUES (:node_id, :face_direction)";
+
+        $substitutions = [":name" => $node->getID(), ":face_direction" => $face_direction];
+        $res = $db->getResultPrepared($queryStr, $substitutions);
+        if($res === false){
+            $logger->error("Error adding capture point", ["queryStr" => $queryStr, "substitutions" => $substitutions]);
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $capture_point_id = $db->getInsertID();
+
+        $db->commitTransaction();
+
+        return $this->getCapturePoint($capture_point_id);
     }
 
     /**********************************************************/
@@ -422,6 +455,17 @@ class EPS_Map extends Logging {
      */
     public function getInstruction(int $id){
         return $this->getClassname("instruction")::getInstance($id, $this);
+    }
+    
+    /**
+     * Get a capture point by its database ID
+     *
+     * @param int $id
+     * 
+     * @return CapturePoint|null|false The CapturePoint instance, null if not found or false on error
+     */
+    public function getCapturePoint(int $id){
+        return $this->getClassname("capture_point")::getInstance($id, $this);
     }
 
     /**********************************************************/

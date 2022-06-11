@@ -413,7 +413,11 @@ class Directions {
     
     // Possible 2D directions (plain directions over a map X and Y)
     public const direction_north =  "N";
+    public const direction_north_east =  "NE";
+    public const direction_north_west =  "NW";
     public const direction_south =  "S";
+    public const direction_south_east =  "SE";
+    public const direction_south_west =  "SW";
     public const direction_east =   "E";
     public const direction_west =   "W";
     
@@ -434,24 +438,44 @@ class Directions {
     public static function turnDirection2D($from_edge, $to_edge): string {
         if($from_edge == self::direction_north){ // North
             if($to_edge == self::direction_north) return self::turn_forward;
-            else if($to_edge == self::direction_south) return self::turn_backward;
-            else if($to_edge == self::direction_east) return self::turn_right;
-            else if($to_edge == self::direction_west) return self::turn_left;
+            else if($to_edge == self::direction_south || $to_edge == self::direction_south_east || $to_edge == self::direction_south_west) return self::turn_backward;
+            else if($to_edge == self::direction_east || $to_edge == self::direction_north_east) return self::turn_right;
+            else if($to_edge == self::direction_west || $to_edge == self::direction_north_west) return self::turn_left;
         }else if($from_edge == self::direction_south){ // South
-            if($to_edge == self::direction_north) return self::turn_backward;
+            if($to_edge == self::direction_north || $to_edge == self::direction_north_east || $to_edge == self::direction_north_west) return self::turn_backward;
             else if($to_edge == self::direction_south) return self::turn_forward;
-            else if($to_edge == self::direction_east) return self::turn_left;
-            else if($to_edge == self::direction_west) return self::turn_right;
+            else if($to_edge == self::direction_east || $to_edge == self::direction_south_east) return self::turn_left;
+            else if($to_edge == self::direction_west || $to_edge == self::direction_south_west) return self::turn_right;
         }else if($from_edge == self::direction_east){ // East
-            if($to_edge == self::direction_north) return self::turn_left;
-            else if($to_edge == self::direction_south) return self::turn_right;
+            if($to_edge == self::direction_north || $to_edge == self::direction_north_east) return self::turn_left;
+            else if($to_edge == self::direction_south || $to_edge == self::direction_south_east) return self::turn_right;
             else if($to_edge == self::direction_east) return self::turn_forward;
-            else if($to_edge == self::direction_west) return self::turn_backward;
+            else if($to_edge == self::direction_west || $to_edge == self::direction_north_west || $to_edge == self::direction_south_west) return self::turn_backward;
         }else if($from_edge == self::direction_west){ // West
-            if($to_edge == self::direction_north) return self::turn_right;
-            else if($to_edge == self::direction_south) return self::turn_left;
-            else if($to_edge == self::direction_east) return self::turn_backward;
+            if($to_edge == self::direction_north || $to_edge == self::direction_north_west) return self::turn_right;
+            else if($to_edge == self::direction_south || $to_edge == self::direction_south_west) return self::turn_left;
+            else if($to_edge == self::direction_east || $to_edge == self::direction_north_east || $to_edge == self::direction_south_east) return self::turn_backward;
             else if($to_edge == self::direction_west) return self::turn_forward;
+        }else if($from_edge == self::direction_north_east){ // North-east
+            if($to_edge == self::direction_east || $to_edge == self::direction_south_east) return self::turn_right;
+            else if($to_edge == self::direction_north || $to_edge == self::direction_north_west) return self::turn_left;
+            else if($to_edge == self::direction_west || $to_edge == self::direction_south_west || $to_edge == self::direction_south) return self::turn_backward;
+            else if($to_edge == self::direction_north_east) return self::turn_forward;
+        }else if($from_edge == self::direction_north_west){ // North-west
+            if($to_edge == self::direction_north || $to_edge == self::direction_north_east) return self::turn_right;
+            else if($to_edge == self::direction_west || $to_edge == self::direction_south_west) return self::turn_left;
+            else if($to_edge == self::direction_south ||$to_edge == self::direction_south_east ||$to_edge == self::direction_east) return self::turn_backward;
+            else if($to_edge == self::direction_north_west) return self::turn_forward;
+        }else if($from_edge == self::direction_south_east){ // Sout-east
+            if($to_edge == self::direction_south || $to_edge == self::direction_south_west) return self::turn_right;
+            else if($to_edge == self::direction_east || $to_edge == self::direction_north_east) return self::turn_left;
+            else if($to_edge == self::direction_north ||$to_edge == self::direction_north_west ||$to_edge == self::direction_west) return self::turn_backward;
+            else if($to_edge == self::direction_south_east) return self::turn_forward;
+        }else if($from_edge == self::direction_south_west){ // South-west
+            if($to_edge == self::direction_west || $to_edge == self::direction_north_west) return self::turn_right;
+            else if($to_edge == self::direction_south || $to_edge == self::direction_south_east) return self::turn_left;
+            else if($to_edge == self::direction_north ||$to_edge == self::direction_north_east ||$to_edge == self::direction_east) return self::turn_backward;
+            else if($to_edge == self::direction_south_west) return self::turn_forward;
         }
     }
 

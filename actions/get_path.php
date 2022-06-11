@@ -3,18 +3,31 @@
 require_once("../AppInit.php");
 require_once("action_functions.php");
 
-if(!isset($_GET['initial_node_id'])) endWithErrorCode(400, "initial_node_id not given");
+if(!isset($_GET['capture_point_id']) && !isset($_GET['initial_node_id'])) endWithErrorCode(400, "You either need to give capture_point_id or initial_node_id");
 if(!isset($_GET['destination_node_id'])) endWithErrorCode(400, "destination_node_id not given");
 
-$initial_node_id = intval($_GET['initial_node_id']);
+$initial_node = null;
+$capture_point = null;
+if(isset($_GET['capture_point_id'])){
+    $capture_point_id = intval($_GET['capture_point_id']);
+    $capture_point = $eps_map->getCapturePoint($capture_point_id);
+    if($capture_point == false) endWithErrorCode(500, "Error getting node $capture_point_id");
+    if($capture_point == null) endWithErrorCode(404, "Node $capture_point_id not found");
+
+    $initial_node = $capture_point->getNode(false);
+    if($initial_node == false) endWithErrorCode(500, "Error getting node $initial_node_id");
+    if($initial_node == null) endWithErrorCode(404, "Node $initial_node_id not found");
+}else if(isset($_GET['initial_node_id'])){
+    $initial_node_id = intval($_GET['initial_node_id']);
+    $initial_node = $eps_map->getNode($initial_node_id);
+    if($initial_node == false) endWithErrorCode(500, "Error getting node $initial_node_id");
+    if($initial_node == null) endWithErrorCode(404, "Node $initial_node_id not found");
+}
+
 $destination_node_id = intval($_GET['destination_node_id']);
 $lang = isset($_GET['lang']) ? strtolower(strval($_GET['lang'])) : "es";
 
 if($lang != "es" && $lang != "ca" && $lang != "en") $lang = "es";
-
-$initial_node = $eps_map->getNode($initial_node_id);
-if($initial_node == false) endWithErrorCode(500, "Error getting node $initial_node_id");
-if($initial_node == null) endWithErrorCode(404, "Node $initial_node_id not found");
 
 $destination_node = $eps_map->getNode($destination_node_id);
 if($destination_node == false) endWithErrorCode(500, "Error getting node $destination_node_id");
@@ -88,6 +101,7 @@ $instructions = getInstructionsListFromPath($path, $eps_map, $language);
 
 endWithJSON([
     "instructions" => $instructions,
+    "initial_turn" => $capture_point != null ? Directions::turnDirection2D($capture_point->getFaceDirection(), $instructions[0]['from']->get2dDirection()) : null,
     "total_cost" => $cost
 ]);
 

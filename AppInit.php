@@ -24,6 +24,7 @@ require_once("Core/Abstract.Class.DB_Object.php");
 require_once("Core/Abstract.Class.Basic_Info.php");
 
 require_once("Core/Class.Building.php");
+require_once("Core/Class.CapturePoint.php");
 require_once("Core/Class.Department.php");
 require_once("Core/Class.Destination_Zone.php");
 require_once("Core/Class.Door.php");
