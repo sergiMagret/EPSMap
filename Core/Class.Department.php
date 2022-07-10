@@ -66,7 +66,7 @@ class Department extends Basic_Info {
         $logger = $eps_map->error_logger;
         $tablename = static::getTableName();
 
-        $queryStr = "SELECT * FROM `$tablename` WHERE LOWER(`name`) LIKE CONCAT(LOWER(:name), \"%\") OR LOWER(`alias`) LIKE CONCAT(LOWER(:name2), \"%\") ORDER BY `name` LIMIT :limit OFFSET :offset";
+        $queryStr = "SELECT * FROM `$tablename` WHERE LOWER(`name`) LIKE CONCAT(\"%\", LOWER(:name), \"%\") OR LOWER(`alias`) LIKE CONCAT(\"%\", LOWER(:name2), \"%\") ORDER BY `name` LIMIT :limit OFFSET :offset";
         $substitutions = [":name" => $name, ":name2" => $name, ":limit" => $limit, ":offset" => $offset];
         $resArr = $db->getResultArrayPrepared($queryStr, $substitutions);
         if($resArr === false){

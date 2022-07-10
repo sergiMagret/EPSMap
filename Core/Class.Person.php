@@ -136,14 +136,16 @@ class Person extends Basic_Info {
         $json_res = parent::jsonSerializeIDs();
         $json_res['space'] = $this->getSpace(true);
         $json_res['department'] = $this->getDepartment(true);
+        $json_res['main_node'] = $this->getSpace()->getDestinationZone()->getMainNode(true);
         
         return $json_res;
     }
-
+    
     public function jsonSerialize(): array {
         $json_res = parent::jsonSerialize();
         $json_res['space'] = $this->getSpace()->jsonSerializeIDs();
         $json_res['department'] = $this->getDepartment()->jsonSerializeIDs();
+        $json_res['main_node'] = $this->getSpace()->getDestinationZone()->getMainNode()->jsonSerializeIDs();
         
         return $json_res;
     }

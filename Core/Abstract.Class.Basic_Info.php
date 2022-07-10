@@ -29,7 +29,7 @@ abstract class Basic_Info extends DB_Object {
      *
      * @return integer
      */
-    public function getID(): string {
+    public function getID(): int {
         return $this->_id;
     }
 
@@ -87,7 +87,7 @@ abstract class Basic_Info extends DB_Object {
         $logger = $eps_map->error_logger;
         $tablename = static::getTableName();
 
-        $queryStr = "SELECT * FROM `$tablename` WHERE LOWER(`name`) LIKE CONCAT(LOWER(:name), \"%\") ORDER BY `name` LIMIT :limit OFFSET :offset";
+        $queryStr = "SELECT * FROM `$tablename` WHERE LOWER(`name`) LIKE CONCAT(\"%\", LOWER(:name), \"%\") ORDER BY `name` LIMIT :limit OFFSET :offset";
         $substitutions = [":name" => $name, ":limit" => $limit, ":offset" => $offset];
         $resArr = $db->getResultArrayPrepared($queryStr, $substitutions);
         if($resArr === false){

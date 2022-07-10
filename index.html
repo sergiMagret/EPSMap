@@ -26,58 +26,14 @@
         <div>
             <div class="search-option-wrapper">
                 <div style="display: flex;">
-                    <input type="checkbox" style="margin-top: 7px; margin-right: 5px;" class="" id="department" name="department"/>
-                    <label class="toggle" for="department">Department</label>
-                </div>
-                <div style="display: flex;">
-                    <input type="checkbox" style="margin-top: 7px; margin-right: 5px;" class="" id="destination_zone" name="destination_zone"/>
-                    <label class="toggle" for="destination_zone">Destination Zone</label>
-                </div>
-                <div style="display: flex;">
-                    <input type="checkbox" style="margin-top: 7px; margin-right: 5px;" class="" id="people" name="people"/>
+                    <input type="checkbox" style="margin-right: 5px;" class="" id="people" name="people"/>
                     <label class="toggle" for="people">People</label>
                 </div>
                 <div style="display: flex;">
-                    <input type="checkbox" style="margin-top: 7px; margin-right: 5px;" class="" id="space" name="space"/>
+                    <input type="checkbox" style="margin-right: 5px;" class="" id="space" name="space"/>
                     <label class="toggle" for="space">Space</label>
                 </div>
-                <!-- <label class="toggle" for="department">
-                    <input type="checkbox" class="toggle__input" id="department" name="department"/>
-                    <span class="toggle-track">
-                        <span class="toggle-indicator"></span>
-                    </span>
-                    Department
-                </label>
-                <label class="toggle" for="destination_zone">
-                    <input type="checkbox" class="toggle__input" id="destination_zone" name="destination_zone"/>
-                    <span class="toggle-track">
-                        <span class="toggle-indicator"></span>
-                    </span>
-                    Destination Zone
-                </label>
-                <label class="toggle" for="people">
-                    <input type="checkbox" class="toggle__input" id="people" name="people"/>
-                    <span class="toggle-track">
-                        <span class="toggle-indicator"></span>
-                    </span>
-                    People
-                </label>
-                <label class="toggle" for="space">
-                    <input type="checkbox" class="toggle__input" id="space" name="space"/>
-                    <span class="toggle-track">
-                        <span class="toggle-indicator"></span>
-                    </span>
-                    Space
-                </label> -->
             </div>
-            <!-- <div class="searcher-wrapper">
-                <div id="searcher"></div>
-                <div>
-                    <button class="searcher-button btn btn-primary btn-sm" disabled>Search</button>
-                </div>
-            </div> -->
-
-            <!-- <br><br><br> -->
             <div id="vs-searcher"></div>
             <div id="path-instructions" class="d-none"></div>
         </div>
@@ -128,15 +84,11 @@
 
 
             // Different checkboxes for different search values to include
-            let checkbox_departments = (config.departments && config.departments.checkbox) ? $(config.departments.checkbox) : null,
-                checkbox_destination_zones = (config.destination_zones && config.destination_zones.checkbox) ? $(config.destination_zones.checkbox) : null,
-                checkbox_people = (config.people && config.people.checkbox) ? $(config.people.checkbox) : null,
+            let checkbox_people = (config.people && config.people.checkbox) ? $(config.people.checkbox) : null,
                 checkbox_spaces = (config.spaces && config.spaces.checkbox) ? $(config.spaces.checkbox) : null;
             
             // List with the checkboxes the user gave us
             const active_checkboxes = [];
-            checkbox_departments && active_checkboxes.push(checkbox_departments);
-            checkbox_destination_zones && active_checkboxes.push(checkbox_destination_zones);
             checkbox_people && active_checkboxes.push(checkbox_people);
             checkbox_spaces && active_checkboxes.push(checkbox_spaces);
 
@@ -148,20 +100,16 @@
              */
             async function searchValue(value){
                 return new Promise((resolve, reject) => {
-                    const include_departments =  (checkbox_departments && checkbox_departments.is(":checked")) ? 1 : 0,
-                        include_destination_zones = (checkbox_destination_zones && checkbox_destination_zones.is(":checked")) ? 1 : 0,
-                        include_people = (checkbox_people && checkbox_people.is(":checked")) ? 1 : 0,
-                        include_spaces = (checkbox_spaces && checkbox_spaces.is(":checked")) ? 1 : 0;
+                    const include_people = (checkbox_people && checkbox_people.is(":checked")) ? 1 : 0,
+                          include_spaces = (checkbox_spaces && checkbox_spaces.is(":checked")) ? 1 : 0;
                     
-                    if(!include_departments && !include_destination_zones && !include_people && !include_spaces) resolve([]);
+                    if(!include_people && !include_spaces) resolve([]);
     
                     $.ajax({
                         type: "GET",
                         data: {
                             "text_search": value,
-                            "limit": 20,
-                            "department": include_departments,
-                            "destination_zone": include_destination_zones,
+                            "limit": 50,
                             "people": include_people,
                             "space": include_spaces
                         },
@@ -186,6 +134,43 @@
                     })
                 });
             }
+
+            /**
+             * Get the name to use when displaying a space to the user
+             * 
+             * @param {Object} space_obj The JSON object space
+             * @param {Boolean} in_person Whether the space will be used inside a person's name or not
+             * 
+             * @returns {String} The value to use
+             */
+            function getSpaceName(space_obj, in_person=false){
+                const space_types = {
+                    1: "Aula",
+                    2: "Bany",
+                    3: "Despatx",
+                    4: "Laboratori",
+                    5: "Aula informàtica",
+                    6: "Hivernacle",
+                    7: "Auditori"
+                };
+
+                if(in_person) return space_obj.name;
+                else {
+                    return space_obj.name + " (" + (space_obj.alias ? space_obj.alias + ", " : "") + space_types[space_obj.space_type_id] + ")";
+                }
+            }
+
+            /**
+             * Get the name to use when displaying a person to the user
+             * 
+             * @param {Object} person_obj The JSON object person
+             * 
+             * @returns {String} The value to use
+             */
+            function getPersonName(person_obj){
+                return person_obj.name + " (" + (person_obj.department.alias || person_obj.department.name) + ", " + getSpaceName(person_obj.space, true) + ")";
+            }
+
     
             /**
              * Update the virtualSelect
@@ -198,28 +183,18 @@
                 // The values for the VirtualSelect have a preappended random value to avoid problems when two differents objects point to the same final node id
                 // The values need to be unique, and without the random value, they wouldn't be unique, you can get the actual ID with value.split("-")[1]
                 let option_groups = [];
-                if(checkbox_departments && new_values.department && new_values.department.length > 0){
-                    let options = {
-                        "label": "Departments",
-                        "options": []
-                    }
-                    options.options.push(...new_values.department.map(elem => {return {"label": elem.name, "value": randomID(3)+"-"+elem.id}}))
-                    option_groups.push(options);
-                }
-                if(checkbox_destination_zones && new_values.destination_zone && new_values.destination_zone.length > 0){
-                    let options = {
-                        "label": "Destination Zones",
-                        "options": []
-                    }
-                    options.options.push(...new_values.destination_zone.map(elem => {return {"label": elem.name, "value": randomID(3)+"-"+elem.main_node.id}}))
-                    option_groups.push(options);
-                }
                 if(checkbox_spaces && new_values.space && new_values.space.length > 0){
                     let options = {
                         "label": "Spaces",
                         "options": []
                     }
-                    options.options.push(...new_values.space.map(elem => {return {"label": elem.name, "value": randomID(3)+"-"+elem.destination_zone.main_node}}))
+                    options.options.push(...new_values.space.map(elem => { 
+                        return { 
+                            // "label": elem.name, 
+                            "label": getSpaceName(elem), 
+                            "value": randomID(3)+"-"+elem.destination_zone.main_node 
+                        } 
+                    }))
                     option_groups.push(options);
                 }
                 
@@ -228,7 +203,13 @@
                         "label": "People",
                         "options": []
                     }
-                    options.options.push(...new_values.people.map(elem => {return {"label": elem.name, "value": randomID(3)+"-"+elem.id}}))
+                    options.options.push(...new_values.people.map(elem => { 
+                        return { 
+                            // "label": elem.name + " (" + (elem.department.alias || elem.department.name) + ", " + elem.space.name + ")",
+                            "label": getPersonName(elem),
+                            "value": randomID(3)+"-"+elem.main_node.id 
+                        }
+                    }))
                     option_groups.push(options);
                 }
     
@@ -283,12 +264,6 @@
 
         VirtualSelect_Searcher({
             main: $("#vs-searcher"),
-            departments: {
-                checkbox: $("input[type=checkbox][name=department]")
-            },
-            destination_zones: {
-                checkbox: $("input[type=checkbox][name=destination_zone]")
-            },
             people: {
                 checkbox: $("input[type=checkbox][name=people]")
             },
