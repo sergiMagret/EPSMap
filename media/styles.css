@@ -58,6 +58,17 @@ header {
 
 .content .main-title h3 {
     font-size: 1.2rem;
+    padding: 0 10px;
+}
+
+#language-select {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#language-select #lang {
+    border: none;
 }
 
 .searcher-wrapper {
@@ -82,6 +93,12 @@ header {
     justify-content: space-evenly;
 }
 
+.search-option {
+    display: flex;
+    align-content: center;
+    align-items: center;
+}
+
 #path-instructions {
     background-color: var(--yellow);
     padding: 5px;
@@ -93,11 +110,17 @@ header {
 }
 
 #path-instructions .instruction-move,
-#path-instructions .instruction-wrapper {
+#path-instructions .instruction-wrapper,
+#path-instructions .final-instruction-text {
     background-color: var(--dark-orange);
     margin: 10px 0px;
     padding: 5px;
     border-radius: 5px;
+}
+
+#path-instructions .instruction-move {
+    font-size: .9rem;
+    opacity: .8;
 }
 
 #path-instructions .instruction-wrapper.has-image {
@@ -112,10 +135,25 @@ header {
 #path-instructions .instruction-wrapper .instruction-image {
     width: 20%;
     max-width: 150px;
+    cursor: pointer;
 }
 
 #path-instructions .instruction-wrapper .instruction-image img {
     width: 100%;
+}
+
+#path-instructions .initial-turn-instruction {
+    display: flex;
+    border-bottom: 3px solid var(--dark-orange);
+    color: var(--dark-blue);
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+}
+
+#path-instructions .initial-turn-instruction i{
+    margin-right: 2px;
+    cursor: pointer;
 }
 
 #dark-background {
@@ -261,21 +299,24 @@ header {
     transition: opacity 0.25s ease-in-out;
 }
 
-@media screen and (max-width: 750px) {
-    /* .search-option-wrapper {
-        flex-direction: column;
-    }    */
-}
-
 @media (prefers-color-scheme: dark) {
     body {
         background-color: var(--dark-blue);
         color: var(--gray);
     }
 
+    #language-select #lang {
+        background-color: var(--dark);
+        color: var(--gray);
+    }
+
     #path-instructions {
         background-color: var(--gray-dark);
         background-color: transparent;
+    }
+
+    #path-instructions .initial-turn-instruction {
+        color: var(--gray);
     }
 
     .btn-primary,

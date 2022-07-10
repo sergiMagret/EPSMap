@@ -1,0 +1,30 @@
+{
+    "title": "EPSMap",
+    "subtitle": "Sistema de navegació intern pels edificis de la EPS",
+    "select_destination": "Selecciona quina destinació vols buscar",
+    "teachers": "Professors",
+    "spaces": "Espais",
+    "initially": "Inicialment",
+    "and": "i",
+    "and_then": "i després",
+    "move_forward": "Avança",
+    "meters": "metres",
+    "you_will_have_reached_your_destination": "Hauràs arribat a la teva destinació",
+    "destination_zone": "Zona de destinació",
+    "interpret_results_title": "Com interpretar les instruccions?",
+    "interpret_results_content": "<p>Normalment cada instrucció fa referència a una intersecció del passadís.</p><p>La primera instrucció és com t'has de posicionar respecte el punt de captura abans de començar a seguir les instruccions remarcades.</p><p>Recorda que 1 metre equival aproximadament a 1 passa.</p><p>L'aplicació et portarà a una zona d'arribada general, trobar el punt de destinació concret en aquesta zona no t'hauria de portar més de 20 o 30 segons.</p>",
+    "language_select": "Seleccionar idioma",
+
+    "space_type_class": "Aula",
+    "space_type_toilet": "Bany",
+    "space_type_office": "Despatx",
+    "space_type_lab": "Laboratori",
+    "space_type_class_comp": "Aula informàtica",
+    "space_type_greenhouse": "Hivernacle",
+    "space_type_auditorium": "Auditori",
+
+    "initial_turn_forward": "Segueix recte mirant el punt de captura",
+    "initial_turn_backward": "Mirant el punt de captura dona mitja volta (el punt de captura hauria de quedar a la teva esquena)",
+    "initial_turn_right": "Mirant el punt de captura gira a la dreta (el punt de captura hauria de quedar a la teva esquerra)",
+    "initial_turn_left": "Mirant el punt de captura gira a l'esquerra (el punt de captura hauria de quedar a la teva dreta)"
+}

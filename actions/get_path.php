@@ -101,6 +101,7 @@ $instructions = getInstructionsListFromPath($path, $eps_map, $language);
 
 endWithJSON([
     "instructions" => $instructions,
+    "destination_zone" => $destination_node->getDestinationZone(),
     "initial_turn" => $capture_point != null ? Directions::turnDirection2D($capture_point->getFaceDirection(), $instructions[0]['from']->get2dDirection()) : null,
     "total_cost" => $cost
 ]);

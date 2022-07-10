@@ -1,0 +1,30 @@
+{
+    "title": "EPSMap",
+    "subtitle": "Internal navigation system in the EPS buildings",
+    "select_destination": "Select what destination you want to search",
+    "teachers": "Teachers",
+    "spaces": "Spaces",
+    "initially": "Initially",
+    "and": "and",
+    "and_then": "and then",
+    "move_forward": "Move forward",
+    "meters": "meters",
+    "you_will_have_reached_your_destination": "You will have reached your destination",
+    "destination_zone": "Destination zone",
+    "interpret_results_title": "How to read the instructions?",
+    "interpret_results_content": "<p>Usually each instruction references an intersection in the hall.</p><p>The first instruction is how you are supposed to position yourself towards the capture point before starting the list of hightlighted instructions.</p><p>Remember that 1 meter is roughly equivalent to 1 setp.</p><p>The application will take you to a general arrival area, finding the exact destination point should not take you more than 20 or 30 seconds.</p>",
+    "language_select": "Select language",
+
+    "space_type_class": "Class",
+    "space_type_toilet": "Toilet",
+    "space_type_office": "Office",
+    "space_type_lab": "Laboratory",
+    "space_type_class_comp": "Computer room",
+    "space_type_greenhouse": "Greenhouse",
+    "space_type_auditorium": "Auditorium",
+
+    "initial_turn_forward": "Keep straight looking at the capture point",
+    "initial_turn_backward": "Looking at the capture point turn backwards (the capture point should be on your back)",
+    "initial_turn_right": "Looking at the capture point turn right (the capture point should be on your left)",
+    "initial_turn_left": "Looking at the capture point turn left (the capture point should be on your right)"
+}

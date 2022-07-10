@@ -1,0 +1,30 @@
+{
+    "title": "EPSMap",
+    "subtitle": "Sistema de navegación interno por los edificios de la EPS",
+    "select_destination": "Selecciona qué destino quieres buscar",
+    "teachers": "Profesores",
+    "spaces": "Espacios",
+    "initially": "Inicialmente",
+    "and": "y",
+    "and_then": "y después",
+    "move_forward": "Avanza",
+    "meters": "metros",
+    "you_will_have_reached_your_destination": "Habrás llegado a tu destino",
+    "destination_zone": "Zona de destinación",
+    "interpret_results_title": "Como interpretar las instrucciones?",
+    "interpret_results_content": "<p>Normalmente cada instruccion hace referencia a una intersección en el pasillo.</p><p>La primera instrucción es como te tienes que posicionar respecto el punto de captura antes de empezar a seguir las instrucciones marcadas.</p><p>Recuerda que 1 metro aproximadamente equivale a 1 paso.</p><p>La aplicación te llevará hasta una zona de llegada general, encontrar el punto de destinación concreto en esta zona no te debería de llevar más de 20 o 30 segundos",
+    "language_select": "Seleccionar idioma",
+
+    "space_type_class": "Aula",
+    "space_type_toilet": "Baño",
+    "space_type_office": "Despacho",
+    "space_type_lab": "Laboratorio",
+    "space_type_class_comp": "Aula informática",
+    "space_type_greenhouse": "Invernadero",
+    "space_type_auditorium": "Auditorio",
+
+    "initial_turn_forward": "Sigue recto mirando el punto de captura",
+    "initial_turn_backward": "Mirando el punto de captura da media vuelta (el punto de captura debería de quedar a tu espalda)",
+    "initial_turn_right": "Mirando el punto de captura gira a la derecha (el punto de captura debería quedar a tu izquierda)",
+    "initial_turn_left": "Mirando el punto de captura gira a la izquierda (el punto de captura debería quedar a tu derecha)"
+}
