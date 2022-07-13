@@ -414,12 +414,12 @@ class Directions {
     // Possible 2D directions (plain directions over a map X and Y)
     public const direction_north =  "N";
     public const direction_north_east =  "NE";
-    public const direction_north_west =  "NW";
+    public const direction_north_west =  "NO";
     public const direction_south =  "S";
     public const direction_south_east =  "SE";
-    public const direction_south_west =  "SW";
+    public const direction_south_west =  "SO";
     public const direction_east =   "E";
-    public const direction_west =   "W";
+    public const direction_west =   "O";
     
     // Possible 3D directions (moving up on down Z)
     public const direction_up =     "U";
@@ -435,6 +435,14 @@ class Directions {
     public const turn_up =          "U";
     public const turn_down =        "D";
 
+    /**
+     * Get the turn the user has to perform in order to go $from_edge $to_edge
+     *
+     * @param string $from_edge The direction for the initial edge, one of Directions::direction_XXX
+     * @param string $to_edge The direction fro the destination edge, one of Directions::direction_XXX
+     * 
+     * @return string One of Directions::direction_XXX
+     */
     public static function turnDirection2D($from_edge, $to_edge): string {
         if($from_edge == self::direction_north){ // North
             if($to_edge == self::direction_north) return self::turn_forward;
@@ -476,6 +484,32 @@ class Directions {
             else if($to_edge == self::direction_south || $to_edge == self::direction_south_east) return self::turn_left;
             else if($to_edge == self::direction_north ||$to_edge == self::direction_north_east ||$to_edge == self::direction_east) return self::turn_backward;
             else if($to_edge == self::direction_south_west) return self::turn_forward;
+        }else return "Unknown turn $from_edge to $to_edge";
+    }
+
+    /**
+     * Get the opposite direction a user has to go based on the initial $direction
+     *
+     * @param string $direction the initial direction, one of Directions::direction_XXX
+     * @return string One of Directions::direction_XXX
+     */
+    public static function getOppositeDirection($direction){
+        if($direction == self::direction_north) return self::direction_south;
+        else if($direction == self::direction_north_east) return self::direction_south_west;
+        else if($direction == self::direction_north_west) return self::direction_south_east;
+        else if($direction == self::direction_south) return self::direction_north;
+        else if($direction == self::direction_south_east) return self::direction_north_west;
+        else if($direction == self::direction_south_west) return self::direction_north_east;
+        else if($direction == self::direction_east) return self::direction_west;
+        else if($direction == self::direction_west) return self::direction_east;
+        
+        // Possible 3D directions (moving up on down Z)
+        else if($direction == self::direction_up) return self::direction_down;
+        else if($direction == self::direction_down) return self::direction_up;
+        else if($direction == self::direction_plain) return self::direction_plain;
+
+        else {
+            return "Unknown direction $direction";
         }
     }
 

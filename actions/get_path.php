@@ -81,13 +81,12 @@ function getInstructionsListFromPath(array $path, EPS_Map $eps_map, Language $la
 
         $obj = null;
         $obj['from'] = $prev_edge;
+        $prev_edge->getEdgeStart();
         $obj['to'] = $current_edge;
+
         $instr = $instruction_ctrl->getInstructionBetween($prev_edge, $current_edge, $lang);
-        // $obj['instruction']['instruction_translation'] = 
-        //     $instr == null ? 
-        //     "Missing instruction from ".$prev_edge->getID()." (".$prev_edge->getEdgeStart(true).", ".$prev_edge->getEdgeEnd(true).") to ".$current_edge->getID()." (".$current_edge->getEdgeStart(true).", ".$current_edge->getEdgeEnd(true).")" : 
-        //     $instr->getText();
         $obj['instruction_translation'] = $instr;
+        
         $obj['has_image'] = $instruction_ctrl->getInstructionImageBetween($prev_edge, $current_edge) != null;
         $instructions_list[] = $obj;
 
@@ -99,12 +98,31 @@ function getInstructionsListFromPath(array $path, EPS_Map $eps_map, Language $la
 
 $instructions = getInstructionsListFromPath($path, $eps_map, $language);
 
-endWithJSON([
-    "instructions" => $instructions,
-    "destination_zone" => $destination_node->getDestinationZone(),
-    "initial_turn" => $capture_point != null ? Directions::turnDirection2D($capture_point->getFaceDirection(), $instructions[0]['from']->get2dDirection()) : null,
-    "total_cost" => $cost
-]);
+if(empty($instructions)){ // In this case the user is only one edge away from the final destination, so there is no instruction
+    $direction_initial_edge = null;
+    if($capture_point->getNode(true) == $path[0]->getEdgeStart(true)) $direction_initial_edge = $path[0]->get2dDirection();
+    else if($capture_point->getNode(true) == $path[0]->getEdgeEnd(true)) $direction_initial_edge = Directions::getOppositeDirection($path[0]->get2dDirection());
+
+    endWithJSON([
+        "only_edge" => $path[0],
+        "instructions" => null,
+        "destination_zone" => $destination_node->getDestinationZone(),
+        "initial_turn" => $capture_point != null ? Directions::turnDirection2D($capture_point->getFaceDirection(), $direction_initial_edge) : null,
+        "total_cost" => $cost
+    ]);
+}else{
+    $direction_initial_edge = null;
+    if($capture_point->getNode(true) == $instructions[0]['from']->getEdgeStart(true)) $direction_initial_edge = $instructions[0]['from']->get2dDirection();
+    else if($capture_point->getNode(true) == $instructions[0]['from']->getEdgeEnd(true)) $direction_initial_edge = Directions::getOppositeDirection($instructions[0]['from']->get2dDirection());
+    
+    endWithJSON([
+        "only_edge" => null,
+        "instructions" => $instructions,
+        "destination_zone" => $destination_node->getDestinationZone(),
+        "initial_turn" => $capture_point != null ? Directions::turnDirection2D($capture_point->getFaceDirection(), $direction_initial_edge) : null,
+        "total_cost" => $cost
+    ]);
+}
 
 
 ?>

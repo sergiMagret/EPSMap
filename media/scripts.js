@@ -203,7 +203,7 @@ const VirtualSelect_Searcher = function(config, active_lang, lang_obj){
 
     $button.on('click', event => {
         const final_node_id = $vs.val().split("-")[1];
-        searchPathTo(final_node_id).then(path => config.onSelectDestination(final_node_id, path.instructions, path.total_cost, path.destination_zone, path.initial_turn)).catch(jqXHR => console.error(jqXHR));
+        searchPathTo(final_node_id).then(path => config.onSelectDestination(final_node_id, path)).catch(jqXHR => console.error(jqXHR));
     });
 }
 

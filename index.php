@@ -83,7 +83,13 @@ else $lang_obj = json_decode(file_get_contents("languages/".DEFAULT_LANGUAGE.".j
             },
             capture_point_id: capture_point_id,
             language: "es",
-            onSelectDestination: (destination, path, total_cost, destination_zone, initial_turn=null) => {
+            onSelectDestination: (destination, path_information) => {
+                const path = path_information.instructions;
+                const total_cost = path_information.total_cost;
+                const destination_zone = path_information.destination_zone;
+                const initial_turn = path_information.initial_turn;
+                const only_edge = path_information.only_edge;
+
                 const initialTurnText = {
                     'F': lang_obj.initial_turn_forward,
                     'B': lang_obj.initial_turn_backward,
@@ -114,46 +120,55 @@ else $lang_obj = json_decode(file_get_contents("languages/".DEFAULT_LANGUAGE.".j
                 let append_move_forward_text = true;
                 const instructions_not_move_forward_text = ["go_1_floor_upstairs", "go_1_floor_downstairs"]; // List of instructions whose following instruction won't include the text to move forward X meters
 
-                path.forEach(edge => {
-                    const from_edge = edge.from;
-                    const to_edge = edge.to;
-                    const instruction_translation = edge.instruction_translation;
-                    const has_image = edge.has_image;
-                    const instruction_image = has_image ? $("<div/>", {
-                        class: "instruction-image"
-                    }).append($("<img/>", {
-                        src: "actions/getInstructionImage.php?initial_edge_id="+from_edge.id+"&destination_edge_id="+to_edge.id
-                    })) : null;
-
-                    const full_instruction_text = append_move_forward_text ? 
-                                                lang_obj.move_forward + " " + from_edge.weight + " " + lang_obj.meters + ". " + instruction_translation.text :
-                                                instruction_translation.text
-                    const instruction_text = $("<div/>", {
-                        class: "instruction-text"
-                    }).text(full_instruction_text);
-
-                    // Update the variable for the next instruction
-                    // Since the move forward is done before the instruction we want to not append the move forward in the next instruction
-                    append_move_forward_text = !instructions_not_move_forward_text.includes(instruction_translation.instruction.name);
-
-                    
-                    const instruction_wrapper = (
-                        $("<div/>", {
-                            class: "instruction-wrapper" + (has_image ? " has-image" : "")
-                        }).append(instruction_image, instruction_text)
+                if(!path){ // The destination is right next to the user
+                    const move_forward_text = $("<div/>", {
+                        class: "final-instruction-text"
+                    }).text(
+                        `${lang_obj.move_forward} ${only_edge.weight} ${lang_obj.meters} ${lang_obj.and} ${lang_obj.you_will_have_reached_your_destination.toLowerCase()} (${lang_obj.destination_zone} "${destination_zone.name}")`
                     );
-                    
-                    path_instructions.append(instruction_wrapper);
-                });
-                
-                const move_forward_text = $("<div/>", {
-                    class: "final-instruction-text"
-                }).text(
-                    `${lang_obj.move_forward} ${path[path.length -1].to.weight} ${lang_obj.meters} ${lang_obj.and} ${lang_obj.you_will_have_reached_your_destination.toLowerCase()} (${lang_obj.destination_zone} "${destination_zone.name}")`
-                );
 
-                path_instructions.append(move_forward_text);
-                
+                    path_instructions.append(move_forward_text);
+                }else{
+                    path.forEach(edge => {
+                        const from_edge = edge.from;
+                        const to_edge = edge.to;
+                        const instruction_translation = edge.instruction_translation || `Missing instruction from ${from_edge.id} (${from_edge.from_node.id}, ${from_edge.to_node.id}) to ${to_edge.id} (${to_edge.from_node.id}, ${to_edge.to_node.id})`;
+                        const has_image = edge.has_image;
+                        const instruction_image = has_image ? $("<div/>", {
+                            class: "instruction-image"
+                        }).append($("<img/>", {
+                            src: "actions/getInstructionImage.php?initial_edge_id="+from_edge.id+"&destination_edge_id="+to_edge.id
+                        })) : null;
+    
+                        const full_instruction_text = append_move_forward_text ? 
+                                                    lang_obj.move_forward + " " + from_edge.weight + " " + lang_obj.meters + ". " + (instruction_translation.text || instruction_translation) :
+                                                    instruction_translation.text
+                        const instruction_text = $("<div/>", {
+                            class: "instruction-text"
+                        }).text(full_instruction_text);
+    
+                        // Update the variable for the next instruction
+                        // Since the move forward is done before the instruction we want to not append the move forward in the next instruction
+                        if((typeof instruction_translation).toLowerCase() == "object") append_move_forward_text = !instructions_not_move_forward_text.includes(instruction_translation.instruction.name);
+                        else append_move_forward_text = true;
+                        
+                        const instruction_wrapper = (
+                            $("<div/>", {
+                                class: "instruction-wrapper" + (has_image ? " has-image" : "")
+                            }).append(instruction_image, instruction_text)
+                        );
+                        
+                        path_instructions.append(instruction_wrapper);
+                    });
+                    
+                    const move_forward_text = $("<div/>", {
+                        class: "final-instruction-text"
+                    }).text(
+                        `${lang_obj.move_forward} ${path[path.length -1].to.weight} ${lang_obj.meters} ${lang_obj.and} ${lang_obj.you_will_have_reached_your_destination.toLowerCase()} (${lang_obj.destination_zone} "${destination_zone.name}")`
+                    );
+
+                    path_instructions.append(move_forward_text);
+                }
             }
         }, active_lang, lang_obj);
     </script>
