@@ -1,9 +1,5 @@
 <?php
 
-// TODO En aquest cas pot ser no s'ha de fer getters i setters, sino que amb els Nodes s'han de fer i modificar els
-// segments.
-// TODO O això o fer una nova classe Graph que gestioni tot el necessari per als Nodes i Edges
-
 /**
  * Class to represent the list of Edges in the database.
  * The Edges connect Nodes in the graph, each Edge has a 2d direction and a 3d direction of Directions to know
@@ -519,7 +515,6 @@ class Directions {
             else if($to_edge == self::direction_down) return self::turn_backward;
             // else if($to_edge == self::direction_plain) return self::
         }
-        // TODO Passar arestes o passar nodes? Si estas pujant unes escales com posar que ha de deixar de pujar?
     }
 }
 

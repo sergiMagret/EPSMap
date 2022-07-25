@@ -15,7 +15,7 @@ const VirtualSelect_Searcher = function(config, active_lang, lang_obj){
             "class": "searcher-button btn btn-primary btn-sm",
             "disabled": 1,
             "type": "button"
-        }).text("Search"),
+        }).text(lang_obj.search),
         
         $vs = $("<div/>", { // Div where the vs-comp will be placed
             "id": randomID(8)

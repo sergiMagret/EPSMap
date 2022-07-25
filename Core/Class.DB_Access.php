@@ -85,7 +85,7 @@ class DB_Access extends Logging {
                 break;
         }
 
-        $this->_db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $this->_db->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
         $this->_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         return true;
@@ -172,7 +172,11 @@ class DB_Access extends Logging {
         
         try{
             foreach($substitutions as $param => $value){
-                $statement->bindValue($param, $value);
+                $bind_type = PDO::PARAM_STR;
+                if(is_null($value)) $bind_type = PDO::PARAM_NULL;
+                else if(is_bool($value)) $bind_type = PDO::PARAM_BOOL;
+                else if(is_numeric($value)) $bind_type = PDO::PARAM_INT;
+                $statement->bindValue($param, $value, $bind_type);
             }
         }catch(PDOException $e){
             $this->error_logger->error("Error binding values", array("queryStr" => $queryStr, "substitutions" => $substitutions));

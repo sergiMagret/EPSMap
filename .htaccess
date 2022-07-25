@@ -1,0 +1,6 @@
+# Disable directory browsing
+Options -Indexes 
+
+# Restric acces in the given list of folders
+RewriteEngine On
+RewriteRule (^|/)(conf|Core|languages|Logs|vendor)(/|$) - [F]

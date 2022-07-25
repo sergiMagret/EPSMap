@@ -100,6 +100,10 @@ header {
     align-items: center;
 }
 
+.search-option label {
+    margin: 0;
+}
+
 #path-instructions {
     background-color: var(--yellow);
     padding: 5px;
@@ -135,7 +139,7 @@ header {
 
 #path-instructions .instruction-wrapper .instruction-image {
     width: 20%;
-    max-width: 150px;
+    /* max-width: 150px; */
     cursor: pointer;
 }
 

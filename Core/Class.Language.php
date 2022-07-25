@@ -96,7 +96,7 @@ class Language extends Basic_Info {
 
         return self::getInstanceByData($resArr[0], $eps_map);
     }
-
+    
     /**
      * Get a Language instance by a full database row
      *
@@ -110,6 +110,33 @@ class Language extends Basic_Info {
         $instance->setEPSMap($eps_map);
 
         return $instance;
+    }
+
+
+    /**
+     * Get all the Languages available
+     *
+     * @param EPS_Map $eps_map Current EPS_Map instance
+     * 
+     * @return Language[]|false The Language instances or false on error
+     */
+    public static function getAll(EPS_Map $eps_map){
+        $db = $eps_map->getDB();
+        $logger = $eps_map->error_logger;
+    
+        $tablename = self::table_name;
+    
+        $queryStr = "SELECT * FROM `$tablename`";
+        $resArr = $db->getResultArrayPrepared($queryStr, []);
+        if($resArr === false){
+            $logger->error($db->getErrorMsg());
+            return false;
+        }
+
+        $languages = [];
+        foreach($resArr as $row) $languages[] = self::getInstanceByData($row, $eps_map);
+    
+        return $languages;
     }
 }
 

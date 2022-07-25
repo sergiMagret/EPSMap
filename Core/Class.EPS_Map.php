@@ -445,6 +445,15 @@ class EPS_Map extends Logging {
     public function getLanguageByShortName(string $short_name){
         return $this->getClassname("language")::getInstanceByShortName($short_name, $this);
     }
+
+    /**
+     * Get a list of available languages
+     * 
+     * @return Language[]|false The list of available Languages instances or false on error
+     */
+    public function getAvailableLanguages(){
+        return $this->getClassname("language")::getAll($this);
+    }
     
     /**
      * Get an instruction by its database ID
@@ -580,10 +589,6 @@ class EPS_Map extends Logging {
         return $this->getClassname("instruction")::searchByName($search_name, $this, $limit, $offset);
     }
 
-    // TODO De fet quasi que només es necessita un mètode principal: vull anar d'aqui a aqui, com hi vaig? I ha de retornar el camí
-    // TODO Clarament també els altres mètodes per fer gets de professors, etc, etc
-    // TODO Els edges (i pot ser nodes) s'haurien de tractar a part, pot ser fer una classe graph??
-
 
     /**
      * Get all the Nodes
@@ -634,12 +639,6 @@ class EPS_Map extends Logging {
 
         return $edges;
     }
-
-
-    public function findPath(Node $from, Node $to){
-
-    }
-
 }
 
 ?>

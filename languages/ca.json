@@ -12,8 +12,9 @@
     "you_will_have_reached_your_destination": "Hauràs arribat a la teva destinació",
     "destination_zone": "Zona de destinació",
     "interpret_results_title": "Com interpretar les instruccions?",
-    "interpret_results_content": "<p>Normalment cada instrucció fa referència a una intersecció del passadís.</p><p>La primera instrucció és com t'has de posicionar respecte el punt de captura abans de començar a seguir les instruccions remarcades.</p><p>Recorda que 1 metre equival aproximadament a 1 passa.</p><p>L'aplicació et portarà a una zona d'arribada general, trobar el punt de destinació concret en aquesta zona no t'hauria de portar més de 20 o 30 segons.</p>",
+    "interpret_results_content": "<p>Normalment cada instrucció fa referència a una intersecció del passadís.</p><p>La primera instrucció és com t'has de posicionar respecte el punt de captura abans de començar a seguir les instruccions remarcades.</p><p>Recorda que 1 metre equival aproximadament a 1 passa.</p><p>L'aplicació et portarà a una zona d'arribada general, trobar el punt de destinació concret en aquesta zona no t'hauria de portar més de 20 o 30 segons.</p><p>Pots prémer la imatge per a fer-la més gran!</p>",
     "language_select": "Seleccionar idioma",
+    "search": "Cercar",
 
     "space_type_class": "Aula",
     "space_type_toilet": "Bany",

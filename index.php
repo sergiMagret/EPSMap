@@ -6,6 +6,8 @@ $lang_obj = null;
 if(isset($_GET['lang'])) $lang_str = $_GET['lang'];
 else $lang_str = DEFAULT_LANGUAGE;
 
+$av_langs = $eps_map->getAvailableLanguages();
+
 if(file_exists("languages/".$lang_str.".json")) $lang_obj = json_decode(file_get_contents("languages/".$lang_str.".json"), true);
 else $lang_obj = json_decode(file_get_contents("languages/".DEFAULT_LANGUAGE.".json"), true);
 
@@ -32,9 +34,9 @@ else $lang_obj = json_decode(file_get_contents("languages/".DEFAULT_LANGUAGE.".j
         </div>
         <div id="language-select">
             <select name="lang" id="lang" title="<?php echo $lang_obj['language_select'] ?>">
-                <option value="ca" <?php if($lang_str == "ca") echo "selected"; ?>>CA</option>
-                <option value="es" <?php if($lang_str == "es") echo "selected"; ?>>ES</option>
-                <option value="en" <?php if($lang_str == "en") echo "selected"; ?>>EN</option>
+                <?php foreach($av_langs as $lang){ ?>
+                <option value="<?php echo $lang->getShortName(); ?>" <?php if($lang_str == $lang->getShortName()) echo "selected"; ?>><?php echo strtoupper($lang->getShortName()) ?></option>
+                <?php } ?>
             </select>
         </div>
     </header>
