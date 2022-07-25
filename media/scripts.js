@@ -213,7 +213,7 @@ const VirtualSelect_Searcher = function(config, active_lang, lang_obj){
  */
 var FullScreenImage = function(){
     const close_image = () => {
-        if(event.target != $("#fullscreen-image img")[0]){
+        if(event.target != $("#fullscreen-image img")[0]){ // TODO Ojo amb aquest event!!
             $("body").removeClass("noscroll");
             $("#dark-background").addClass("d-none");
             $("#fullscreen-image").addClass("d-none");
@@ -221,7 +221,7 @@ var FullScreenImage = function(){
         }
     };
 
-    $("#path-instructions").on("click", ".instruction-image img", event => {
+    $("#path-instructions").on("click", ".instruction-image img", event => { 
         $("body").addClass("noscroll");
         $("#dark-background").removeClass("d-none");
         const fullscreen_image = $("#fullscreen-image");
@@ -242,7 +242,7 @@ var FullScreenImage = function(){
  */
 var ChangeLanguage = function(){
     $("#lang").on('change', event => {
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(location.search);
         params.set("lang", $(event.currentTarget).val());
         window.location.href = window.location.pathname + "?" + params; // Reload the same page with the new param
     });

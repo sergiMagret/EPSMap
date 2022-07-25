@@ -91,6 +91,7 @@ else $lang_obj = json_decode(file_get_contents("languages/".DEFAULT_LANGUAGE.".j
                 const destination_zone = path_information.destination_zone;
                 const initial_turn = path_information.initial_turn;
                 const only_edge = path_information.only_edge;
+                const already_in_place = path_information.in_place;
 
                 const initialTurnText = {
                     'F': lang_obj.initial_turn_forward,
@@ -122,7 +123,15 @@ else $lang_obj = json_decode(file_get_contents("languages/".DEFAULT_LANGUAGE.".j
                 let append_move_forward_text = true;
                 const instructions_not_move_forward_text = ["go_1_floor_upstairs", "go_1_floor_downstairs"]; // List of instructions whose following instruction won't include the text to move forward X meters
 
-                if(!path){ // The destination is right next to the user
+                if(already_in_place){
+                    const already_in_place_text = $("<div/>", {
+                        class: "final-instruction-text"
+                    }).text(
+                        `${lang_obj.already_in_place} (${lang_obj.destination_zone} "${destination_zone.name}")`
+                    );
+
+                    path_instructions.append(already_in_place_text);
+                }else if(!path){ // The destination is right next to the user
                     const move_forward_text = $("<div/>", {
                         class: "final-instruction-text"
                     }).text(

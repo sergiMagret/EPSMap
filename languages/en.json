@@ -15,6 +15,7 @@
     "interpret_results_content": "<p>Usually each instruction references an intersection in the hall.</p><p>The first instruction is how you are supposed to position yourself towards the capture point before starting the list of hightlighted instructions.</p><p>Remember that 1 meter is roughly equivalent to 1 setp.</p><p>The application will take you to a general arrival area, finding the exact destination point should not take you more than 20 or 30 seconds.</p><p>You can click the image to make it bigger!</p>",
     "language_select": "Select language",
     "search": "Search",
+    "already_in_place": "You are already at your destination. Your destination should be next to you",
 
     "space_type_class": "Class",
     "space_type_toilet": "Toilet",

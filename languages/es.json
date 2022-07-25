@@ -15,6 +15,7 @@
     "interpret_results_content": "<p>Normalmente cada instruccion hace referencia a una intersección en el pasillo.</p><p>La primera instrucción es como te tienes que posicionar respecto el punto de captura antes de empezar a seguir las instrucciones marcadas.</p><p>Recuerda que 1 metro aproximadamente equivale a 1 paso.</p><p>La aplicación te llevará hasta una zona de llegada general, encontrar el punto de destinación concreto en esta zona no te debería de llevar más de 20 o 30 segundos</p><p>Puedes pulsar en la imagen para hacerla más grande!</p>",
     "language_select": "Seleccionar idioma",
     "search": "Buscar",
+    "already_in_place": "Ya estás en la destinación. Tu destino debería estar a tu lado",
 
     "space_type_class": "Aula",
     "space_type_toilet": "Baño",

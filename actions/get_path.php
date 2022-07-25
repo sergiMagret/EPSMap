@@ -96,6 +96,17 @@ function getInstructionsListFromPath(array $path, EPS_Map $eps_map, Language $la
     return $instructions_list;
 }
 
+if(empty($path)){ // The user has requested for the same destination as the starting position
+    endWithJSON([
+        "in_place" => true,
+        "only_edge" => null,
+        "instructions" => null,
+        "destination_zone" => $destination_node->getDestinationZone(),
+        "initial_turn" => null,
+        "total_cost" => $cost
+    ]);
+}
+
 $instructions = getInstructionsListFromPath($path, $eps_map, $language);
 
 if(empty($instructions)){ // In this case the user is only one edge away from the final destination, so there is no instruction
@@ -104,6 +115,7 @@ if(empty($instructions)){ // In this case the user is only one edge away from th
     else if($capture_point->getNode(true) == $path[0]->getEdgeEnd(true)) $direction_initial_edge = Directions::getOppositeDirection($path[0]->get2dDirection());
 
     endWithJSON([
+        "in_place" => false,
         "only_edge" => $path[0],
         "instructions" => null,
         "destination_zone" => $destination_node->getDestinationZone(),
@@ -116,6 +128,7 @@ if(empty($instructions)){ // In this case the user is only one edge away from th
     else if($capture_point->getNode(true) == $instructions[0]['from']->getEdgeEnd(true)) $direction_initial_edge = Directions::getOppositeDirection($instructions[0]['from']->get2dDirection());
     
     endWithJSON([
+        "in_place" => false,
         "only_edge" => null,
         "instructions" => $instructions,
         "destination_zone" => $destination_node->getDestinationZone(),
