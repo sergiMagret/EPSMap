@@ -212,8 +212,8 @@ const VirtualSelect_Searcher = function(config, active_lang, lang_obj){
  * once the user tap anywhere else than the image
  */
 var FullScreenImage = function(){
-    const close_image = () => {
-        if(event.target != $("#fullscreen-image img")[0]){ // TODO Ojo amb aquest event!!
+    const close_image = (event) => {
+        if(event.target != $("#fullscreen-image img")[0]){
             $("body").removeClass("noscroll");
             $("#dark-background").addClass("d-none");
             $("#fullscreen-image").addClass("d-none");
@@ -231,6 +231,7 @@ var FullScreenImage = function(){
             src: event.currentTarget.src
         }));
 
+        // Small timeout to attach the close listener so the user doesn't click twice accidentally
         setTimeout(() => {
             $(document.body).on('click', close_image);
         }, 100);

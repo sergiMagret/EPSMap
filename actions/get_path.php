@@ -25,9 +25,9 @@ if(isset($_GET['capture_point_id'])){
 }
 
 $destination_node_id = intval($_GET['destination_node_id']);
-$lang = isset($_GET['lang']) ? strtolower(strval($_GET['lang'])) : "es";
+$lang = isset($_GET['lang']) ? strtolower(strval($_GET['lang'])) : "";
 
-if($lang != "es" && $lang != "ca" && $lang != "en") $lang = "es";
+if($lang != "es" && $lang != "ca" && $lang != "en") $lang = DEFAULT_LANGUAGE;
 
 $destination_node = $eps_map->getNode($destination_node_id);
 if($destination_node == false) endWithErrorCode(500, "Error getting node $destination_node_id");
@@ -40,26 +40,6 @@ if($language == null) endWithErrorCode(404, "Language $lang not found");
 $graph = new Graph($eps_map->getAllNodes(), $eps_map->getAllEdges());
 
 list($path, $cost) = $graph->findShortestPath($initial_node, $destination_node);
-
-/**
- * Extract the ordered list of Nodes from the $path
- *
- * @param Edge[] $path
- * @param Node $start The start node for the first Edge
- * 
- * @return Node[]
- */
-function getNodeListFromPath(array $path, Node $start){
-    $prev_node = $start;
-    $nodes_list = [$prev_node];
-    foreach($path as $edge){
-        $current_node = $edge->getOppositeNode($prev_node);
-        $nodes_list[] = $current_node;
-        $prev_node = $current_node;
-    }
-
-    return $nodes_list;
-}
 
 /**
  * Get the Instructions to navigate the Edges of the $path in $lang language

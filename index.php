@@ -70,7 +70,6 @@ else $lang_obj = json_decode(file_get_contents("languages/".DEFAULT_LANGUAGE.".j
     <script>
         const searchParams = (new URL(window.location.href)).searchParams;
         const capture_point_id = parseInt(searchParams.get("cp_id")) || 1;
-        const language = searchParams.get("lang") || "es";
         const lang_obj = <?php echo json_encode($lang_obj) ?> || {};
         const active_lang = <?php echo json_encode($_GET['lang'] ?? DEFAULT_LANGUAGE); ?>;
 
@@ -84,7 +83,6 @@ else $lang_obj = json_decode(file_get_contents("languages/".DEFAULT_LANGUAGE.".j
                 checkbox: $("input[type=checkbox][name=space]")
             },
             capture_point_id: capture_point_id,
-            language: "es",
             onSelectDestination: (destination, path_information) => {
                 const path = path_information.instructions;
                 const total_cost = path_information.total_cost;
