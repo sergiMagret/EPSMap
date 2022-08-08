@@ -1,45 +1,19 @@
 <?php
 
-    // Mida dels identificadors
-    // edge_id:             20
-    // node_id:             10
-    // porta_id:            8
-    // za_id:               6
-    // espai_id:            6
-    // professor_id:        6
-    // instruction_id:      5
-    // department_id        3
-    // tipus_node_id:       3
-    // tipus_espai_id:      3
-    // edifici_id:          2
-    // lang_id:             2 (VARCHAR)
-
     $time_start = microtime(true);
     $current_lang = "es";
     require_once("AppInit.php");
 
-    // var_dump(array_map(fn($e) => $e->getName()."<br>", $eps_map->searchDepartment("enginyeria")));
-    // exit;
-
     $graph = new Graph($eps_map->getAllNodes(), $eps_map->getAllEdges());
     echo "<pre>";
 
-    $encode_json = function($object){
-        echo "<pre>";
-        var_dump(json_decode(json_encode($object), true));
-        echo "</pre>";
-    };
-
-    // $encode_json($eps_map->getSpace(1));
-    // exit;
-
-    $ini_node = $eps_map->getNode(1);
-    // $end_space = $eps_map->getSpace(4);
-    // $end_node = $end_space->getDestinationZone()->getMainNode();
-    $end_node = $eps_map->getNode(8);
+    $ini_node = $eps_map->getNode(20);
+    $end_space = $eps_map->getSpace(34);
+    $end_node = $end_space->getDestinationZone()->getMainNode();
+    // $end_node = $eps_map->getNode(7);
 
     echo "Start: ".$ini_node->getID()."\n";
-    echo "Finnish: "; //.$end_space->getName()." (".$end_space->getNode(true).") belonging to destination zone ".$end_space->getDestinationZone()->getName()." (".$end_space->getDestinationZone(true).")";
+    echo "Finnish: ".$end_space->getName()." (".$end_space->getNode(true).") belonging to destination zone ".$end_space->getDestinationZone()->getName()." (".$end_space->getDestinationZone(true).")";
     echo " assigned to node ".$end_node->getID()."\n";
 
     /**
@@ -47,11 +21,10 @@
      *
      * @param Edge[] $path
      * @param Node $start
-     * @param Node $finnish
      * 
      * @return Node[]
      */
-    function getNodeListFromPath(array $path, Node $start, Node $finnish){
+    function getNodeListFromPath(array $path, Node $start){
         $prev_node = $start;
         $nodes_list = [$prev_node];
         foreach($path as $edge){
@@ -98,23 +71,20 @@
      * @var Edge[] $path
      */
     list($path, $cost) = $graph->findShortestPath($ini_node, $end_node);
-    // var_dump($path);
-    // var_dump($cost);
-    // exit;
 
-    echo "\n";
-    var_dump(array_map(fn($n) => $n->getID(), getNodeListFromPath($path, $ini_node, $end_node)));
+    echo "\nList of nodes to go by:\n";
+    var_dump(array_map(fn($n) => $n->getID(), getNodeListFromPath($path, $ini_node)));
     echo "\n";
 
+    echo "Instructions to follow:\n";
     $instructions_list = getInstructionsListFromPath($path, $eps_map, $eps_map->getLanguageByShortName($current_lang));
     foreach($instructions_list as $inst){
-        echo "From ".$inst['from']->getID()." to ".$inst['to']->getID().": ";
+        echo "From ".$inst['from']->getID()." (".$inst['from']->getEdgeStart(true).", ".$inst['from']->getEdgeEnd(true).") to ".$inst['to']->getID()." (".$inst['to']->getEdgeStart(true).", ".$inst['to']->getEdgeEnd(true)."): ";
         echo $inst['from']->getWeight()." meters -> ";
         echo $inst['text']."<br>";
     }
     echo $instructions_list[count($instructions_list)-1]['to']->getWeight()." meters <br>";
 
-    // $encode_json($path);
     echo "<br><br><b>Final cost: $cost meters</b><br>";
     
     echo "</pre>";
