@@ -11,6 +11,9 @@ Per això fes una còpia del fitxer [`conf/settings.fill.php`](./conf/settings.f
 Aquest últim fitxer és el que es s’ha de modificar per a canviar la configuració de l’aplicació. No està trackejat per Git, per tant, res del que modifiquis aquí es guardarà al repositori.  
 En aquest mateix fitxer trobaràs les instruccions i recomanacions a l’hora de configurar l’aplicació.
 
+## Informe
+Pots trobar l'infome realitzat i tota la documentació entregada a la pàgina [DUGiDocs](http://hdl.handle.net/10256/22677).
+
 -----------------
 
 # EPSMap - English
@@ -26,6 +29,9 @@ To do so, copy and rename the file [`conf/settings.fill.php`](./conf/settings.fi
 This new file is the one you need to modify in order to update the application configuration. It is not tracked by Git, so nothing you put in this file will be saved in the repo.  
 In this same file you will find further instructions and recomendations to configure the application.
 
+## Report
+You can find the final report and all the information in the web [DUGiDocs](http://hdl.handle.net/10256/22677).
+
 -----------------
 
 # EPSMap - Castellano
@@ -40,3 +46,6 @@ O para importar la estructura juntamente con los datos del edificio Politécnica
 Para esto haz una copia del fichero [`conf/settings.fill.php`](./conf/settings.fill.php) y renombralo a `conf/settings.php`.  
 Este último fichero es el que tienes que modificar para actualitzar la configuración de la aplicación. No està trackeado por Git, por tanto, nada de lo que modifiques aquí se guardará en el repositorio.  
 En este mismo fichero encontrarás instrucciones y recomendaciones para configurar la aplicación.
+
+## Informe
+Puedes encontrar el informe realizado y toda la documentación entregada en la página [DUGiDocs](http://hdl.handle.net/10256/22677).
